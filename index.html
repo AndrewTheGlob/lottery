@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="發財選號器">
+    
+    <title>幸運發財選號器 - 大樂透 & 威力彩</title>
+    
+    <style>
+        :root {
+            --lotto-red: #e60012;
+            --lotto-gold: #ffcc00;
+            --bg-color: #f8f9fa;
+        }
+
+        /* 針對手機全螢幕優化 */
+        body {
+            font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            /* 防止手機拉動重新整理 */
+            overscroll-behavior-y: contain;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem 1.5rem;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            border-top: 10px solid var(--lotto-red);
+            position: relative;
+        }
+
+        h1 { 
+            color: var(--lotto-red); 
+            margin-top: 0;
+            font-size: 1.5rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid var(--lotto-red);
+            background: white;
+            color: var(--lotto-red);
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: 0.2s;
+        }
+
+        .tab-btn.active {
+            background: var(--lotto-red);
+            color: white;
+        }
+
+        .display-area {
+            min-height: 160px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0;
+            background: #fffdf0;
+            padding: 15px;
+            border-radius: 20px;
+            border: 1px dashed #decba4;
+        }
+
+        /* 號碼球樣式 */
+        .ball {
+            width: 46px;
+            height: 46px;
+            background: white;
+            border: 3px solid #ddd;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 900;
+            font-size: 1.3rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+            animation: bounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .ball.red-zone {
+            border-color: var(--lotto-red);
+            color: var(--lotto-red);
+        }
+
+        .ball.special {
+            background: linear-gradient(135deg, #ffecb3 0%, var(--lotto-gold) 100%);
+            border-color: #d4a017;
+            color: #5c4300;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .action-btn {
+            background: linear-gradient(180deg, #ff4d4d 0%, var(--lotto-red) 100%);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 15px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            border-radius: 15px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(230, 0, 18, 0.4);
+            transition: 0.1s;
+            -webkit-tap-highlight-color: transparent; /* 移除手機點擊藍框 */
+        }
+
+        .action-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 10px rgba(230, 0, 18, 0.4);
+        }
+
+        .info {
+            font-size: 0.85rem;
+            color: #888;
+            margin-top: 20px;
+            line-height: 1.5;
+        }
+
+        .tip {
+            color: #d4a017;
+            font-weight: bold;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>💰 祝您中頭獎</h1>
+    
+    <div class="tabs">
+        <button class="tab-btn active" id="btn-lotto" onclick="switchGame('lotto')">大樂透</button>
+        <button class="tab-btn" id="btn-super" onclick="switchGame('super')">威力彩</button>
+    </div>
+
+    <strong id="game-title">大樂透 (6/49)</strong>
+    
+    <div class="display-area" id="ball-container">
+        <span style="color: #bbb;">準備好抱走頭獎了嗎？</span>
+    </div>
+
+    <button class="action-btn" onclick="generateNumbers()">立即選號</button>
+    
+    <div class="info" id="game-info">
+        每注 50 元，從 01~49 選出 6 個號碼
+    </div>
+    <div class="tip">※ 點選上方頁籤切換遊戲</div>
+</div>
+
+<script>
+    let currentGame = 'lotto';
+
+    function switchGame(game) {
+        currentGame = game;
+        // 更新 UI 狀態
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        if(game === 'lotto') {
+            document.getElementById('btn-lotto').classList.add('active');
+            document.getElementById('game-title').innerText = '大樂透 (6/49)';
+            document.getElementById('game-info').innerText = '每注 50 元，從 01~49 選出 6 個號碼';
+        } else {
+            document.getElementById('btn-super').classList.add('active');
+            document.getElementById('game-title').innerText = '威力彩 (6/38 + 1/8)';
+            document.getElementById('game-info').innerText = '每注 100 元，第一區 01~38 選 6，第二區 01~08 選 1';
+        }
+        document.getElementById('ball-container').innerHTML = '<span style="color: #bbb;">切換完成，祝好運！</span>';
+    }
+
+    function generateNumbers() {
+        const container = document.getElementById('ball-container');
+        container.innerHTML = ''; 
+
+        // 加上震動效果 (手機支援的話)
+        if (window.navigator.vibrate) {
+            window.navigator.vibrate(50);
+        }
+
+        if (currentGame === 'lotto') {
+            const numbers = getRandomNumbers(49, 6);
+            numbers.forEach((num, index) => {
+                setTimeout(() => createBall(num, 'red-zone'), index * 100);
+            });
+        } else {
+            const zone1 = getRandomNumbers(38, 6);
+            const zone2 = Math.floor(Math.random() * 8) + 1;
+            
+            zone1.forEach((num, index) => {
+                setTimeout(() => createBall(num, 'red-zone'), index * 100);
+            });
+            setTimeout(() => createBall(zone2, 'special'), 700);
+        }
+    }
+
+    function getRandomNumbers(max, count) {
+        const pool = Array.from({ length: max }, (_, i) => i + 1);
+        const result = [];
+        for (let i = 0; i < count; i++) {
+            const randomIndex = Math.floor(Math.random() * pool.length);
+            result.push(pool.splice(randomIndex, 1)[0]);
+        }
+        return result.sort((a, b) => a - b);
+    }
+
+    function createBall(num, className) {
+        const ball = document.createElement('div');
+        ball.className = `ball ${className}`;
+        ball.innerText = num.toString().padStart(2, '0');
+        document.getElementById('ball-container').appendChild(ball);
+    }
+</script>
+
+</body>
+</html>
