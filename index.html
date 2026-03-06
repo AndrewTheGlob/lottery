@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -7,19 +7,20 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Lotto Lab">
     
-    <title>Lotto Lab | 精準選號</title>
+    <title>Lotto Lab | Premium Picker</title>
     
     <style>
         :root {
             --primary-dark: #1a1a1a;
             --accent-red: #ff3b30;
             --accent-gold: #ffcc00;
-            --glass: rgba(255, 255, 255, 0.8);
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: linear-gradient(135deg, #1e1e2f 0%, #121212 100%);
+            background: linear-gradient(-45deg, #1e1e2f, #2d1e2f, #121212, #1e2a2f);
+            background-size: 400% 400%;
+            animation: gradientFlow 15s ease infinite;
             color: #ffffff;
             margin: 0;
             display: flex;
@@ -29,25 +30,49 @@
             overflow: hidden;
         }
 
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .bg-glow-1 {
+            position: absolute; width: 300px; height: 300px; 
+            background: rgba(255, 59, 48, 0.1); filter: blur(100px); 
+            top: -50px; left: -50px; z-index: -1;
+        }
+
+        .bg-glow-2 {
+            position: absolute; width: 300px; height: 300px; 
+            background: rgba(255, 204, 0, 0.1); filter: blur(100px); 
+            bottom: -50px; right: -50px; z-index: -1;
+        }
+
         .app-card {
             background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 35px;
+            border-radius: 40px;
             width: 85%;
             max-width: 380px;
             padding: 40px 25px;
             text-align: center;
             box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            animation: cardGlow 8s ease-in-out infinite alternate;
+        }
+
+        @keyframes cardGlow {
+            from { box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
+            to { box-shadow: 0 25px 60px rgba(255,255,255,0.05); }
         }
 
         header h1 {
             font-size: 1.8rem;
             font-weight: 700;
-            letter-spacing: -0.5px;
-            margin: 0 0 10px 0;
-            background: linear-gradient(to right, #fff, #888);
+            letter-spacing: 2px;
+            margin: 0 0 30px 0;
+            background: linear-gradient(to right, #fff, #666);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -55,32 +80,31 @@
         .mode-selector {
             display: flex;
             background: rgba(0, 0, 0, 0.3);
-            border-radius: 15px;
+            border-radius: 18px;
             padding: 5px;
             margin-bottom: 30px;
         }
 
         .mode-btn {
             flex: 1;
-            padding: 10px;
+            padding: 12px;
             border: none;
             background: transparent;
-            color: #888;
+            color: #666;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             cursor: pointer;
             transition: 0.3s;
-            border-radius: 10px;
+            border-radius: 14px;
         }
 
         .mode-btn.active {
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.12);
             color: #fff;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
         .result-display {
-            min-height: 140px;
+            min-height: 150px;
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
@@ -96,17 +120,17 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             font-weight: 700;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             color: #000;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
-            animation: ballPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+            animation: ballPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
         }
 
         .number-ball.special {
             background: linear-gradient(135deg, #ffd700, #ffae00);
-            box-shadow: 0 0 25px rgba(255, 174, 0, 0.4);
+            box-shadow: 0 0 20px rgba(255, 174, 0, 0.3);
         }
 
         @keyframes ballPop {
@@ -119,93 +143,99 @@
             color: #000;
             border: none;
             width: 100%;
-            padding: 18px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            border-radius: 20px;
+            padding: 20px;
+            font-size: 1rem;
+            font-weight: 800;
+            border-radius: 22px;
             cursor: pointer;
             transition: 0.2s;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
         }
 
         .main-action:active {
-            transform: scale(0.96);
-            background: #cccccc;
+            transform: scale(0.97);
+            background: #eeeeee;
         }
 
         .status-text {
-            font-size: 0.8rem;
-            color: #555;
-            margin-top: 25px;
-            letter-spacing: 1px;
+            font-size: 0.7rem;
+            color: #444;
+            margin-top: 30px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
         }
     </style>
 </head>
 <body>
 
-<div class="app-card">
-    <header>
-        <h1>LOTTO LAB</h1>
-    </header>
-    
-    <div class="mode-selector">
-        <button class="mode-btn active" id="tab-lotto" onclick="switchMode('lotto')">6 / 49</button>
-        <button class="mode-btn" id="tab-super" onclick="switchMode('super')">SUPER 7</button>
-    </div>
+    <div class="bg-glow-1"></div>
+    <div class="bg-glow-2"></div>
 
-    <div class="result-display" id="display">
+    <div class="app-card">
+        <header>
+            <h1>LOTTO LAB</h1>
+        </header>
+        
+        <div class="mode-selector">
+            <button class="mode-btn active" id="tab-lotto" onclick="switchMode('lotto')">6 / 49</button>
+            <button class="mode-btn" id="tab-super" onclick="switchMode('super')">SUPER 7</button>
         </div>
 
-    <button class="main-action" onclick="generate()">Generate</button>
-    
-    <div class="status-text" id="status">READY TO DRAW</div>
-</div>
+        <div class="result-display" id="display"></div>
 
-<script>
-    let mode = 'lotto';
-
-    function switchMode(newMode) {
-        mode = newMode;
-        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(`tab-${newMode}`).classList.add('active');
-        document.getElementById('display').innerHTML = '';
-        document.getElementById('status').innerText = newMode === 'lotto' ? 'LOTTO 6/49 MODE' : 'SUPER 7 MODE';
-    }
-
-    function generate() {
-        const display = document.getElementById('display');
-        display.innerHTML = '';
+        <button class="main-action" onclick="generate()">Generate</button>
         
-        if (window.navigator.vibrate) window.navigator.vibrate(10);
+        <div class="status-text" id="status">System Ready</div>
+    </div>
 
-        if (mode === 'lotto') {
-            const nums = pick(49, 6);
-            nums.forEach((n, i) => {
-                setTimeout(() => addBall(n, false), i * 80);
-            });
-        } else {
-            const z1 = pick(38, 6);
-            const z2 = Math.floor(Math.random() * 8) + 1;
-            z1.forEach((n, i) => {
-                setTimeout(() => addBall(n, false), i * 80);
-            });
-            setTimeout(() => addBall(z2, true), 560);
+    <script>
+        let mode = 'lotto';
+
+        function switchMode(newMode) {
+            mode = newMode;
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`tab-${newMode}`).classList.add('active');
+            document.getElementById('display').innerHTML = '';
+            document.getElementById('status').innerText = newMode === 'lotto' ? '6/49 Mode' : 'Super 7 Mode';
         }
-    }
 
-    function pick(max, count) {
-        let p = Array.from({length: max}, (_, i) => i + 1);
-        return Array.from({length: count}, () => p.splice(Math.floor(Math.random() * p.length), 1)[0]).sort((a,b) => a-b);
-    }
+        function generate() {
+            const display = document.getElementById('display');
+            display.innerHTML = '';
+            
+            if (window.navigator.vibrate) window.navigator.vibrate(15);
 
-    function addBall(num, isSpecial) {
-        const b = document.createElement('div');
-        b.className = `number-ball ${isSpecial ? 'special' : ''}`;
-        b.innerText = num.toString().padStart(2, '0');
-        document.getElementById('display').appendChild(b);
-    }
-</script>
+            if (mode === 'lotto') {
+                const nums = pick(49, 6);
+                nums.forEach((n, i) => {
+                    setTimeout(() => addBall(n, false), i * 100);
+                });
+            } else {
+                const z1 = pick(38, 6);
+                const z2 = Math.floor(Math.random() * 8) + 1;
+                z1.forEach((n, i) => {
+                    setTimeout(() => addBall(n, false), i * 100);
+                });
+                setTimeout(() => addBall(z2, true), 700);
+            }
+        }
 
+        function pick(max, count) {
+            let p = Array.from({length: max}, (_, i) => i + 1);
+            let res = [];
+            for(let i=0; i<count; i++) {
+                res.push(p.splice(Math.floor(Math.random() * p.length), 1)[0]);
+            }
+            return res.sort((a,b) => a-b);
+        }
+
+        function addBall(num, isSpecial) {
+            const b = document.createElement('div');
+            b.className = `number-ball ${isSpecial ? 'special' : ''}`;
+            b.innerText = num.toString().padStart(2, '0');
+            document.getElementById('display').appendChild(b);
+        }
+    </script>
 </body>
 </html>
