@@ -7,19 +7,20 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="LottoLab">
     
-    <title>Lotto Lab | Daleto & Weili</title>
+    <title>Lotto Lab | Fortune Edition</title>
     
     <style>
         :root {
-            --bg-vivid: #0f172a;
-            --btn-grad: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-            --ball-grad: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
-            --special-grad: linear-gradient(135deg, #facc15 0%, #fb923c 100%);
+            /* Imperial Palette */
+            --imperial-red: #8b0000;
+            --gold-leaf: #d4af37;
+            --deep-black: #121212;
+            --ball-white: #fdfdfd;
         }
 
         body {
-            font-family: 'Inter', -apple-system, system-ui, sans-serif;
-            background: var(--bg-vivid);
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: radial-gradient(circle at center, #2c0000 0%, #0a0a0a 100%);
             margin: 0;
             display: flex;
             justify-content: center;
@@ -28,155 +29,170 @@
             overflow: hidden;
         }
 
-        /* Animated Background Elements */
-        .orb {
+        /* Abstract Cloud Patterns */
+        .cloud {
             position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(139,0,0,0.15) 0%, transparent 70%);
             z-index: -1;
-            animation: move 20s infinite alternate;
+            filter: blur(50px);
+            animation: drift 20s infinite alternate;
         }
-        .orb-1 { width: 400px; height: 400px; background: rgba(99, 102, 241, 0.2); top: -100px; left: -100px; }
-        .orb-2 { width: 300px; height: 300px; background: rgba(232, 121, 249, 0.2); bottom: -50px; right: -50px; animation-delay: -5s; }
+        .cloud-top { top: -200px; right: -100px; }
+        .cloud-bottom { bottom: -200px; left: -100px; animation-delay: -10s; }
 
-        @keyframes move {
-            from { transform: translate(0, 0); }
-            to { transform: translate(50px, 100px); }
+        @keyframes drift {
+            from { transform: translate(0,0) scale(1); }
+            to { transform: translate(30px, 50px) scale(1.1); }
         }
 
         .app-card {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 40px;
-            width: 88%;
+            background: rgba(20, 20, 20, 0.7);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            /* Golden Border with glow */
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 30px;
+            width: 85%;
             max-width: 380px;
-            padding: 35px 20px;
+            padding: 40px 25px;
             text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            box-shadow: 0 0 40px rgba(0,0,0,0.8), inset 0 0 20px rgba(139,0,0,0.2);
+            position: relative;
         }
 
+        /* Decorative Corner Elements (The "Fortune" touch) */
+        .app-card::before, .app-card::after {
+            content: '🧧'; /* Symbolic representation */
+            position: absolute;
+            font-size: 1.2rem;
+            opacity: 0.5;
+        }
+        .app-card::before { top: 15px; left: 15px; }
+        .app-card::after { bottom: 15px; right: 15px; }
+
         header h1 {
-            font-size: 2rem;
-            font-weight: 800;
-            letter-spacing: -1px;
-            margin: 0 0 5px 0;
-            color: #fff;
+            font-size: 1.8rem;
+            font-weight: 900;
+            letter-spacing: 4px;
+            margin: 0;
+            background: linear-gradient(135deg, #fff 0%, var(--gold-leaf) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         header p {
-            font-size: 0.8rem;
-            color: rgba(255,255,255,0.5);
+            font-size: 0.7rem;
+            color: var(--gold-leaf);
+            opacity: 0.6;
             margin-bottom: 30px;
+            letter-spacing: 3px;
             text-transform: uppercase;
-            letter-spacing: 2px;
         }
 
         .mode-selector {
             display: flex;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            padding: 6px;
-            margin-bottom: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 35px;
+            border: 1px solid rgba(212, 175, 55, 0.1);
         }
 
         .mode-btn {
             flex: 1;
-            padding: 14px;
+            padding: 12px;
             border: none;
             background: transparent;
-            color: rgba(255,255,255,0.4);
+            color: #666;
             font-weight: 700;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border-radius: 15px;
+            transition: 0.4s;
+            border-radius: 8px;
         }
 
         .mode-btn.active {
-            background: #fff;
-            color: #000;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            transform: scale(1.02);
+            background: rgba(139, 0, 0, 0.8);
+            color: var(--gold-leaf);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
         .result-display {
-            min-height: 160px;
+            min-height: 140px;
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 35px;
+            gap: 12px;
+            margin-bottom: 40px;
         }
 
         .ball {
-            width: 50px;
-            height: 50px;
-            border-radius: 16px; /* Squircle style */
+            width: 48px;
+            height: 48px;
+            border-radius: 50%; /* Traditional circle */
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.3rem;
+            font-size: 1.25rem;
             font-weight: 800;
-            background: var(--ball-grad);
-            color: #1e293b;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
-            animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+            background: radial-gradient(circle at 30% 30%, #fff 0%, #e0e0e0 100%);
+            color: var(--imperial-red);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            animation: fortunePop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
         }
 
         .ball.special {
-            background: var(--special-grad);
-            color: #fff;
-            box-shadow: 0 8px 20px rgba(251, 146, 60, 0.3);
+            background: radial-gradient(circle at 30% 30%, #fff 0%, var(--gold-leaf) 100%);
+            color: #4a3700;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
         }
 
-        @keyframes popIn {
-            0% { transform: scale(0) rotate(-20deg); opacity: 0; }
-            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        @keyframes fortunePop {
+            0% { transform: translateY(30px) scale(0); opacity: 0; }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
         }
 
         .action-btn {
-            background: var(--btn-grad);
-            color: white;
-            border: none;
+            background: linear-gradient(135deg, var(--imperial-red) 0%, #4a0000 100%);
+            color: var(--gold-leaf);
+            border: 1px solid var(--gold-leaf);
             width: 100%;
-            padding: 22px;
+            padding: 20px;
             font-size: 1.1rem;
-            font-weight: 800;
-            border-radius: 22px;
+            font-weight: 900;
+            border-radius: 15px;
             cursor: pointer;
-            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
-            transition: 0.3s;
             text-transform: uppercase;
+            letter-spacing: 5px;
+            transition: 0.3s;
+            box-shadow: 0 10px 30px rgba(139,0,0,0.3);
         }
 
         .action-btn:active {
-            transform: scale(0.95);
-            filter: brightness(1.1);
+            transform: scale(0.97);
+            filter: brightness(1.2);
         }
 
         .status {
-            margin-top: 25px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: rgba(255,255,255,0.3);
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            margin-top: 30px;
+            font-size: 0.7rem;
+            color: rgba(212, 175, 55, 0.4);
+            letter-spacing: 2px;
         }
     </style>
 </head>
 <body>
 
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
+    <div class="cloud cloud-top"></div>
+    <div class="cloud cloud-bottom"></div>
 
     <div class="app-card">
         <header>
             <h1>LOTTO LAB</h1>
-            <p>Pick Your Future</p>
+            <p>Blessing From Above</p>
         </header>
         
         <div class="mode-selector">
@@ -186,9 +202,9 @@
 
         <div class="result-display" id="display"></div>
 
-        <button class="action-btn" onclick="generate()">Punch It</button>
+        <button class="action-btn" onclick="generate()">Draw Luck</button>
         
-        <div class="status" id="status">Ready to roll</div>
+        <div class="status" id="status">Prosperity Awaits</div>
     </div>
 
     <script>
@@ -199,24 +215,24 @@
             document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`tab-${newMode}`).classList.add('active');
             document.getElementById('display').innerHTML = '';
-            document.getElementById('status').innerText = newMode === 'lotto' ? 'Daleto 6/49' : 'Weili 6/38 + 1/8';
+            document.getElementById('status').innerText = newMode === 'lotto' ? 'Daleto Sequence' : 'Weili Sequence';
         }
 
         function generate() {
             const display = document.getElementById('display');
             display.innerHTML = '';
-            if (window.navigator.vibrate) window.navigator.vibrate([20, 10, 20]);
+            if (window.navigator.vibrate) window.navigator.vibrate([30, 50, 30]);
 
             if (mode === 'lotto') {
                 pick(49, 6).forEach((n, i) => {
-                    setTimeout(() => addBall(n, false), i * 80);
+                    setTimeout(() => addBall(n, false), i * 120);
                 });
             } else {
                 pick(38, 6).forEach((n, i) => {
-                    setTimeout(() => addBall(n, false), i * 80);
+                    setTimeout(() => addBall(n, false), i * 120);
                 });
                 const z2 = Math.floor(Math.random() * 8) + 1;
-                setTimeout(() => addBall(z2, true), 550);
+                setTimeout(() => addBall(z2, true), 840);
             }
         }
 
