@@ -7,19 +7,18 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="CaishenNode">
     
-    <title>Caishen Node | Digital Prosperity</title>
+    <title>Caishen Node | Ritual Protocol</title>
     
     <style>
         :root {
-            --imperial-red: #7a0000;
+            --imperial-red: #8b0000;
             --gold-leaf: #d4af37;
-            --deep-black: #0d0d0d;
-            --ball-white: #ffffff;
+            --smoke: rgba(255, 255, 255, 0.05);
         }
 
         body {
             font-family: 'Inter', -apple-system, sans-serif;
-            background: radial-gradient(circle at center, #220000 0%, #050505 100%);
+            background: radial-gradient(circle at center, #1a0000 0%, #050505 100%);
             margin: 0;
             display: flex;
             justify-content: center;
@@ -28,94 +27,98 @@
             overflow: hidden;
         }
 
-        .cloud {
+        /* Ambient Smoke Effect */
+        .smoke-wrap {
             position: absolute;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(122,0,0,0.12) 0%, transparent 70%);
+            width: 100%;
+            height: 100%;
             z-index: -1;
-            filter: blur(60px);
-            animation: drift 25s infinite alternate;
+            overflow: hidden;
         }
-        .cloud-top { top: -250px; right: -150px; }
-        .cloud-bottom { bottom: -250px; left: -150px; animation-delay: -12s; }
+        .smoke-particle {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, var(--smoke) 0%, transparent 70%);
+            bottom: -150px;
+            border-radius: 50%;
+            animation: rise 10s infinite linear;
+        }
 
-        @keyframes drift {
-            from { transform: translate(0,0) rotate(0deg); }
-            to { transform: translate(40px, 60px) rotate(10deg); }
+        @keyframes rise {
+            0% { transform: translateY(0) scale(1); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-100vh) scale(1.5); opacity: 0; }
         }
 
         .app-card {
-            background: rgba(15, 15, 15, 0.85);
+            background: rgba(15, 15, 15, 0.8);
             backdrop-filter: blur(30px);
             -webkit-backdrop-filter: blur(30px);
-            border: 1px solid rgba(212, 175, 55, 0.25);
-            border-radius: 32px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 35px;
             width: 85%;
             max-width: 380px;
-            padding: 45px 25px;
+            padding: 50px 25px;
             text-align: center;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.9), inset 0 0 30px rgba(122,0,0,0.1);
+            box-shadow: 0 40px 80px rgba(0,0,0,0.8);
             position: relative;
         }
 
         header h1 {
             font-size: 1.6rem;
             font-weight: 900;
-            letter-spacing: 6px;
+            letter-spacing: 5px;
             margin: 0;
-            background: linear-gradient(180deg, #fff 0%, var(--gold-leaf) 100%);
+            background: linear-gradient(180deg, #fff, var(--gold-leaf));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
         }
 
         header p {
             font-size: 0.65rem;
             color: var(--gold-leaf);
-            opacity: 0.5;
-            margin-top: 8px;
+            opacity: 0.4;
+            margin-top: 10px;
             margin-bottom: 35px;
             letter-spacing: 4px;
-            text-transform: uppercase;
         }
 
         .mode-selector {
             display: flex;
-            background: rgba(0, 0, 0, 0.6);
-            border-radius: 14px;
-            padding: 4px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            padding: 5px;
             margin-bottom: 35px;
-            border: 1px solid rgba(212, 175, 55, 0.15);
+            border: 1px solid rgba(212, 175, 55, 0.1);
         }
 
         .mode-btn {
             flex: 1;
-            padding: 14px;
+            padding: 12px;
             border: none;
             background: transparent;
-            color: #555;
+            color: #444;
             font-weight: 800;
             font-size: 0.8rem;
             cursor: pointer;
-            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: 0.4s;
             border-radius: 10px;
-            letter-spacing: 1px;
         }
 
         .mode-btn.active {
             background: var(--imperial-red);
             color: var(--gold-leaf);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
 
+        /* Result Display Area */
         .result-display {
             min-height: 150px;
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             align-items: center;
-            gap: 14px;
+            gap: 15px;
             margin-bottom: 40px;
         }
 
@@ -128,62 +131,71 @@
             align-items: center;
             font-size: 1.3rem;
             font-weight: 800;
-            background: radial-gradient(circle at 35% 35%, #fff 0%, #d9d9d9 100%);
-            color: var(--imperial-red);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.5);
-            animation: pop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+            background: radial-gradient(circle at 30% 30%, #fff 0%, #d1d1d1 100%);
+            color: #600;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            animation: ballPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.2) both;
         }
 
         .ball.special {
-            background: radial-gradient(circle at 35% 35%, #fff 0%, var(--gold-leaf) 100%);
-            color: #3d2e00;
-            box-shadow: 0 0 25px rgba(212, 175, 55, 0.35);
+            background: radial-gradient(circle at 30% 30%, #fff 0%, var(--gold-leaf) 100%);
+            color: #430;
         }
 
-        @keyframes pop {
-            0% { transform: translateY(25px) scale(0); opacity: 0; }
-            100% { transform: translateY(0) scale(1); opacity: 1; }
+        @keyframes ballPop {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Ritual Message (Divine Answer) */
+        .ritual-msg {
+            font-size: 0.9rem;
+            color: var(--gold-leaf);
+            font-weight: 700;
+            height: 20px;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+            opacity: 0;
+            transition: 0.3s;
         }
 
         .action-btn {
-            background: linear-gradient(180deg, #a50000 0%, var(--imperial-red) 100%);
+            background: linear-gradient(180deg, #900 0%, var(--imperial-red) 100%);
             color: var(--gold-leaf);
-            border: 1px solid rgba(212, 175, 55, 0.4);
+            border: 1px solid rgba(212, 175, 55, 0.3);
             width: 100%;
             padding: 22px;
             font-size: 1rem;
             font-weight: 900;
-            border-radius: 16px;
+            border-radius: 20px;
             cursor: pointer;
             text-transform: uppercase;
-            letter-spacing: 6px;
-            transition: 0.3s;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            letter-spacing: 5px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
         }
 
-        .action-btn:active {
-            transform: scale(0.96);
-            filter: brightness(1.3);
-        }
+        .action-btn:active { transform: scale(0.97); }
 
-        .status {
+        .footer-note {
             margin-top: 35px;
-            font-size: 0.65rem;
-            color: rgba(212, 175, 55, 0.3);
-            letter-spacing: 3px;
-            text-transform: uppercase;
+            font-size: 0.6rem;
+            color: rgba(212, 175, 55, 0.2);
+            letter-spacing: 2px;
         }
     </style>
 </head>
 <body>
 
-    <div class="cloud cloud-top"></div>
-    <div class="cloud cloud-bottom"></div>
+    <div class="smoke-wrap">
+        <div class="smoke-particle" style="left: 20%; animation-delay: 0s;"></div>
+        <div class="smoke-particle" style="left: 50%; animation-delay: -3s;"></div>
+        <div class="smoke-particle" style="left: 80%; animation-delay: -7s;"></div>
+    </div>
 
     <div class="app-card">
         <header>
             <h1>CAISHEN NODE</h1>
-            <p>Digital Wealth Protocol</p>
+            <p>Blessing Interface v2.6</p>
         </header>
         
         <div class="mode-selector">
@@ -191,11 +203,13 @@
             <button class="mode-btn" id="tab-super" onclick="switchMode('super')">WEILI</button>
         </div>
 
+        <div id="ritual-status" class="ritual-msg"></div>
+
         <div class="result-display" id="display"></div>
 
-        <button class="action-btn" onclick="generate()">Invoke Luck</button>
+        <button class="action-btn" id="main-btn" onclick="startRitual()">Start Ritual</button>
         
-        <div class="status" id="status">Secure Connection Active</div>
+        <div class="footer-note">Protocol Secure • Divine Link Est.</div>
     </div>
 
     <script>
@@ -206,25 +220,46 @@
             document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`tab-${newMode}`).classList.add('active');
             document.getElementById('display').innerHTML = '';
-            document.getElementById('status').innerText = newMode === 'lotto' ? 'Accessing Daleto...' : 'Accessing Weili...';
+            document.getElementById('ritual-status').style.opacity = '0';
         }
 
-        function generate() {
+        async function startRitual() {
             const display = document.getElementById('display');
-            display.innerHTML = '';
-            if (window.navigator.vibrate) window.navigator.vibrate([40, 60, 40]);
+            const status = document.getElementById('ritual-status');
+            const btn = document.getElementById('main-btn');
 
+            // Reset
+            display.innerHTML = '';
+            btn.disabled = true;
+            status.style.opacity = '1';
+            
+            // Step 1: Throwing Divination Blocks (筊杯)
+            status.innerText = "CONSULTING...";
+            if (window.navigator.vibrate) window.navigator.vibrate([30, 100, 30]);
+            await sleep(800);
+
+            // Step 2: Divine Approval
+            status.innerText = "GRANTED (聖筊)";
+            if (window.navigator.vibrate) window.navigator.vibrate([150, 50, 150]);
+            await sleep(600);
+
+            // Step 3: Draw Numbers
             if (mode === 'lotto') {
                 pick(49, 6).forEach((n, i) => {
-                    setTimeout(() => addBall(n, false), i * 110);
+                    setTimeout(() => addBall(n, false), i * 120);
                 });
             } else {
                 pick(38, 6).forEach((n, i) => {
-                    setTimeout(() => addBall(n, false), i * 110);
+                    setTimeout(() => addBall(n, false), i * 120);
                 });
                 const z2 = Math.floor(Math.random() * 8) + 1;
-                setTimeout(() => addBall(z2, true), 770);
+                setTimeout(() => addBall(z2, true), 840);
             }
+
+            setTimeout(() => { 
+                btn.disabled = false;
+                status.innerText = "PROSPERITY REVEALED";
+            }, 1200);
         }
 
         function pick(max, count) {
@@ -242,6 +277,8 @@
             b.innerText = num.toString().padStart(2, '0');
             document.getElementById('display').appendChild(b);
         }
+
+        function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
     </script>
 </body>
 </html>
