@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="CaishenNode">
     
-    <title>Caishen Node | Animated Ritual Protocol</title>
+    <title>Caishen Node | Precision Ritual</title>
     
     <style>
         :root {
@@ -28,23 +28,23 @@
             overflow: hidden;
         }
 
-        /* Ambient Smoke */
         .smoke-wrap { position: absolute; width: 100%; height: 100%; z-index: -1; overflow: hidden; }
         .smoke-particle { position: absolute; width: 300px; height: 300px; background: radial-gradient(circle, var(--smoke) 0%, transparent 70%); bottom: -150px; border-radius: 50%; animation: rise 12s infinite linear; opacity: 0; }
-        @keyframes rise { 0% { transform: translateY(0) scale(1); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(-120vh) scale(1.8); opacity: 0; } }
+        @keyframes rise { 0% { transform: translateY(0) scale(1); opacity: 0; } 10% { opacity: 1; } 100% { transform: translateY(-120vh) scale(1.8); opacity: 0; } }
 
         .app-card {
             background: rgba(15, 15, 15, 0.85);
             backdrop-filter: blur(30px);
             -webkit-backdrop-filter: blur(30px);
-            border: 1px solid rgba(212, 175, 55, 0.2);
+            border: 1px solid rgba(212, 175, 55, 0.25);
             border-radius: 35px;
-            width: 85%;
+            width: 90%;
             max-width: 380px;
-            padding: 40px 20px;
+            padding: 40px 15px;
             text-align: center;
             box-shadow: 0 40px 80px rgba(0,0,0,0.8);
             position: relative;
+            box-sizing: border-box;
         }
 
         header h1 {
@@ -59,13 +59,15 @@
 
         header p { font-size: 0.65rem; color: var(--gold-leaf); opacity: 0.4; margin-top: 8px; margin-bottom: 25px; letter-spacing: 3px; }
 
+        /* 1. 改善黏在一起的問題 */
         .mode-selector {
             display: flex;
             background: rgba(0, 0, 0, 0.5);
             border-radius: 15px;
-            padding: 5px;
+            padding: 6px;
             margin-bottom: 25px;
             border: 1px solid rgba(212, 175, 55, 0.1);
+            gap: 10px; /* 增加按鈕之間的間距 */
         }
 
         .mode-btn {
@@ -73,7 +75,7 @@
             padding: 12px;
             border: none;
             background: transparent;
-            color: #444;
+            color: #555;
             font-weight: 800;
             font-size: 0.8rem;
             cursor: pointer;
@@ -81,141 +83,73 @@
             border-radius: 10px;
         }
 
-        .mode-btn.active { background: var(--imperial-red); color: var(--gold-leaf); }
+        .mode-btn.active { 
+            background: var(--imperial-red); 
+            color: var(--gold-leaf);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
 
-        /* --- Animated Ritual Zone --- */
         .ritual-zone {
-            height: 120px;
+            height: 100px;
             display: flex;
             justify-content: center;
             align-items: center;
             position: relative;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
-        /* Incense Burner & Sticks */
-        .censer-wrap {
-            position: absolute;
-            bottom: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            opacity: 0.3;
-            transition: 0.5s;
-        }
+        .censer-wrap { position: absolute; bottom: 0; display: flex; flex-direction: column; align-items: center; opacity: 0.3; transition: 0.5s; }
         .app-card.ritual-active .censer-wrap { opacity: 1; }
+        .incense-sticks { display: flex; gap: 6px; margin-bottom: -5px; }
+        .stick { width: 3px; height: 50px; background: #5c3a21; border-radius: 2px; position: relative; }
+        .stick::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px; background: #333; border-radius: 2px; transition: 0.3s; }
+        .app-card.ritual-active .stick::after { background: #ffc9a8; box-shadow: 0 0 10px #ff9e61, 0 0 5px #fff; }
+        .censer { width: 50px; height: 25px; background: linear-gradient(180deg, #444, #222); border-radius: 0 0 12px 12px; border: 1.5px solid #444; }
 
-        .incense-sticks {
-            display: flex;
-            gap: 6px;
-            margin-bottom: -5px;
-        }
-        .stick {
-            width: 3px;
-            height: 60px;
-            background: #964B00;
-            border-radius: 2px;
-            position: relative;
-        }
-        .stick::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 5px;
-            background: #444; /* Unlit tip */
-            border-radius: 2px 2px 0 0;
-            transition: 0.3s;
-        }
-        .app-card.ritual-active .stick::after {
-            background: #ffc9a8; /* Glowing lit tip */
-            box-shadow: 0 0 10px #ff9e61, 0 0 5px #fff;
-        }
-
-        .censer {
-            width: 60px;
-            height: 30px;
-            background: linear-gradient(180deg, #666, #333);
-            border-radius: 0 0 15px 15px;
-            border: 2px solid #555;
-        }
-
-        /* Divination Blocks (筊杯) */
-        .blocks-wrap {
-            display: flex;
-            gap: 20px;
-            opacity: 0;
-            transform: translateY(-20px);
-            transition: 0.5s;
-        }
+        .blocks-wrap { display: flex; gap: 20px; opacity: 0; transform: translateY(-10px); transition: 0.5s; }
         .app-card.ritual-active .blocks-wrap { opacity: 1; transform: translateY(0); }
+        .block { width: 35px; height: 55px; background: var(--vivid-red); position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.5); border-radius: 50% 10% 10% 50% / 50% 10% 10% 50%; }
+        .block-1.flat-up { background: #eee; border: 1.5px solid #ccc; transform: rotateY(180deg); }
+        @keyframes toss { 0% { transform: translate(0, 0) rotate(0deg); } 50% { transform: translate(-10px, -40px) rotate(180deg); } 100% { transform: translate(0, 0) rotate(360deg); } }
+        .app-card.tossing .block { animation: toss 0.7s ease-out; }
 
-        .block {
-            width: 40px;
-            height: 60px;
-            background: var(--vivid-red);
-            position: relative;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        /* Squircle-like shape for block (Crescent) */
-        .block-crescent {
-            border-radius: 50% 10% 10% 50% / 50% 10% 10% 50%;
-        }
-
-        /* States for Bwa-bwei (Divine Answer) */
-        /* BLOCK 1: FLAT UP (平) */
-        .block-1.flat-up {
-            background: #fff;
-            color: #000;
-            border: 2px solid #ddd;
-            transform: rotateY(180deg);
-        }
-        /* BLOCK 2: CONVEX UP (凸/聖筊) */
-        .block-2.convex-up {
-            background: var(--vivid-red);
-            transform: rotate(0deg);
-        }
-
-        /* Tossing Animation */
-        @keyframes toss {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            20% { transform: translate(-20px, -30px) rotate(120deg); }
-            40% { transform: translate(15px, -50px) rotate(240deg); }
-            60% { transform: translate(-10px, -20px) rotate(360deg); }
-            80% { transform: translate(5px, -10px) rotate(370deg); }
-            100% { transform: translate(0, 0) rotate(360deg); }
-        }
-        .app-card.tossing .block { animation: toss 0.8s ease-out; }
-
-        /* --- End Ritual Zone --- */
-
-        /* Result Display Area */
+        /* 2. 改善數字排版問題 */
         .result-display {
-            min-height: 150px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            min-height: 120px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 預設 3 欄，大樂透會變成 3+3 */
+            justify-items: center;
             align-items: center;
-            gap: 15px;
-            margin-bottom: 30px;
+            gap: 15px 10px;
+            margin: 20px auto 35px;
+            max-width: 280px;
+        }
+
+        /* 威力彩特殊排版：前 6 顆號碼維持格狀，最後一顆特別號置中 */
+        .result-display.weili-mode {
+            grid-template-columns: repeat(4, 1fr); /* 威力彩改為 4 欄，變成 4+3 */
         }
 
         .ball {
-            width: 48px;
-            height: 48px;
+            width: 42px; /* 稍微縮小以適應手機一行排開的需求 */
+            height: 42px;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.3rem;
+            font-size: 1.15rem;
             font-weight: 800;
-            background: radial-gradient(circle at 30% 30%, #fff 0%, #d1d1d1 100%);
+            background: radial-gradient(circle at 30% 30%, #fff 0%, #cfcfcf 100%);
             color: #600;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.5);
             animation: ballPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.2) both;
         }
 
-        .ball.special { background: radial-gradient(circle at 30% 30%, #fff 0%, var(--gold-leaf) 100%); color: #430; }
+        .ball.special { 
+            background: radial-gradient(circle at 30% 30%, #fff 0%, var(--gold-leaf) 100%); 
+            color: #430; 
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+        }
 
         @keyframes ballPop { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
@@ -224,34 +158,34 @@
             color: var(--gold-leaf);
             border: 1px solid rgba(212, 175, 55, 0.3);
             width: 100%;
-            padding: 22px;
+            padding: 20px;
             font-size: 1rem;
             font-weight: 900;
-            border-radius: 20px;
+            border-radius: 18px;
             cursor: pointer;
             text-transform: uppercase;
             letter-spacing: 5px;
             box-shadow: 0 15px 30px rgba(0,0,0,0.4);
             transition: 0.3s;
         }
-        .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .action-btn:disabled { opacity: 0.5; }
         .action-btn:active { transform: scale(0.97); }
 
-        .footer-note { margin-top: 30px; font-size: 0.6rem; color: rgba(212, 175, 55, 0.2); letter-spacing: 2px; text-transform: uppercase;}
+        .footer-note { margin-top: 25px; font-size: 0.55rem; color: rgba(212, 175, 55, 0.2); letter-spacing: 2px; }
     </style>
 </head>
 <body>
 
     <div class="smoke-wrap">
-        <div class="smoke-particle" style="left: 15%; animation-delay: 0s;"></div>
-        <div class="smoke-particle" style="left: 45%; animation-delay: -4s;"></div>
-        <div class="smoke-particle" style="left: 75%; animation-delay: -8s;"></div>
+        <div class="smoke-particle" style="left: 20%;"></div>
+        <div class="smoke-particle" style="left: 50%; animation-delay: -4s;"></div>
+        <div class="smoke-particle" style="left: 80%; animation-delay: -8s;"></div>
     </div>
 
     <div class="app-card" id="app-card">
         <header>
             <h1>CAISHEN NODE</h1>
-            <p>Animated Blessing Protocol v3.0</p>
+            <p>Animated Blessing Protocol v3.1</p>
         </header>
         
         <div class="mode-selector">
@@ -261,17 +195,12 @@
 
         <div class="ritual-zone">
             <div class="censer-wrap">
-                <div class="incense-sticks">
-                    <div class="stick"></div>
-                    <div class="stick" style="height: 70px;"></div>
-                    <div class="stick"></div>
-                </div>
+                <div class="incense-sticks"><div class="stick"></div><div class="stick" style="height: 60px;"></div><div class="stick"></div></div>
                 <div class="censer"></div>
             </div>
-            
             <div class="blocks-wrap" id="blocks-wrap">
-                <div class="block block-crescent block-1" id="block-1"></div>
-                <div class="block block-crescent block-2" id="block-2"></div>
+                <div class="block block-1" id="block-1"></div>
+                <div class="block block-2" id="block-2"></div>
             </div>
         </div>
 
@@ -287,19 +216,25 @@
 
         function switchMode(newMode) {
             mode = newMode;
-            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove|('active'));
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`tab-${newMode}`).classList.add('active');
-            document.getElementById('display').innerHTML = '';
+            
+            const display = document.getElementById('display');
+            display.innerHTML = '';
+            // 切換模式時改變 Grid 佈局
+            if(newMode === 'super') {
+                display.classList.add('weili-mode');
+            } else {
+                display.classList.remove('weili-mode');
+            }
             resetRitual();
         }
 
         function resetRitual() {
             const card = document.getElementById('app-card');
             const b1 = document.getElementById('block-1');
-            const b2 = document.getElementById('block-2');
             card.classList.remove('ritual-active', 'tossing');
-            b1.classList.remove('flat-up', 'convex-up');
-            b2.classList.remove('flat-up', 'convex-up');
+            b1.classList.remove('flat-up');
         }
 
         async function performAnimatedRitual() {
@@ -307,52 +242,40 @@
             const display = document.getElementById('display');
             const btn = document.getElementById('main-btn');
             const b1 = document.getElementById('block-1');
-            const b2 = document.getElementById('block-2');
 
-            // Reset
             display.innerHTML = '';
             resetRitual();
             btn.disabled = true;
             
-            // Step 1: Activate Incense and Blocks appearance
             card.classList.add('ritual-active');
             if (window.navigator.vibrate) window.navigator.vibrate(50);
-            await sleep(800); // Prayer time
+            await new Promise(r => setTimeout(r, 700));
 
-            // Step 2: Toss the Blocks (Bwa-bwei)
             card.classList.add('tossing');
-            if (window.navigator.vibrate) window.navigator.vibrate([30, 80, 30, 80]); // Rolling bwa-bwei
-            await sleep(800); // Toss duration
+            if (window.navigator.vibrate) window.navigator.vibrate([30, 80, 30, 80]);
+            await new Promise(r => setTimeout(r, 700));
 
-            // Step 3: Land and Reveal Sacred Result (聖筊)
             card.classList.remove('tossing');
-            // Block 1 lands Flat-up (平)
-            b1.classList.add('flat-up');
-            // Block 2 lands Convex-up (凸/紅)
-            b2.classList.add('convex-up');
+            b1.classList.add('flat-up'); // 聖筊
             
-            // Sacred Vibration (聖筊)
             if (window.navigator.vibrate) window.navigator.vibrate([200, 100, 200]);
-            await sleep(700); // Divine connection time
+            await new Promise(r => setTimeout(r, 600));
 
-            // Step 4: Access Sequence
             if (mode === 'lotto') {
                 pick(49, 6).forEach((n, i) => {
-                    setTimeout(() => addBall(n, false), i * 110);
+                    setTimeout(() => addBall(n, false), i * 100);
                 });
             } else {
-                pick(38, 6).forEach((n, i) => {
-                    setTimeout(() => addBall(n, false), i * 110);
+                // 威力彩 6+1
+                const nums = pick(38, 6);
+                const spec = Math.floor(Math.random() * 8) + 1;
+                nums.forEach((n, i) => {
+                    setTimeout(() => addBall(n, false), i * 100);
                 });
-                const z2 = Math.floor(Math.random() * 8) + 1;
-                setTimeout(() => addBall(z2, true), 770);
+                setTimeout(() => addBall(spec, true), 700);
             }
 
-            // End Ritual
-            setTimeout(() => { 
-                btn.disabled = false;
-                // Keep incense active, maybe blocks fade?
-            }, 1200);
+            setTimeout(() => { btn.disabled = false; }, 1200);
         }
 
         function pick(max, count) {
@@ -370,8 +293,6 @@
             b.innerText = num.toString().padStart(2, '0');
             document.getElementById('display').appendChild(b);
         }
-
-        function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
     </script>
 </body>
 </html>
