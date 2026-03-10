@@ -2,174 +2,182 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Caishen Node v6.9 | Final Fix</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Caishen Node v7.0 | 數位祭壇重啟</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
-            --gold: #d4af37;
-            --dark-red: #8b0000;
+            --imperial-red: #8b0000;
+            --vivid-red: #e60012;
+            --gold-leaf: #d4af37;
+            --smoke: rgba(255, 255, 255, 0.08);
         }
 
         body {
-            background-color: #050505;
-            color: #fff;
-            font-family: sans-serif;
-            display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0;
+            font-family: 'PingFang TC', sans-serif;
+            background: radial-gradient(circle at center, #1a0000 0%, #050505 100%);
+            margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden;
         }
 
-        /* 截圖範圍核心 */
+        /* 恢復煙霧動畫 */
+        .smoke-wrap { position: fixed; width: 100%; height: 100%; z-index: -1; }
+        .smoke-particle { position: absolute; width: 300px; height: 300px; background: radial-gradient(circle, var(--smoke) 0%, transparent 70%); bottom: -150px; border-radius: 50%; animation: rise 12s infinite linear; opacity: 0; }
+        @keyframes rise { 0% { transform: translateY(0) scale(1); opacity: 0; } 10% { opacity: 1; } 100% { transform: translateY(-120vh) scale(1.8); opacity: 0; } }
+
         .app-card {
-            background-color: #111111; /* 使用實色背景 */
-            border: 2px solid var(--gold);
-            border-radius: 30px;
-            width: 350px; padding: 30px 20px;
-            text-align: center;
-            position: relative;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            background: rgba(20, 20, 20, 0.8);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 40px;
+            width: 90%; max-width: 380px; padding: 40px 20px; text-align: center;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.9);
+            position: relative; overflow: hidden;
         }
 
-        header h1 { font-size: 1.5rem; letter-spacing: 5px; margin: 0; color: #fff; }
-        header p { font-size: 0.7rem; color: var(--gold); margin: 5px 0 20px; opacity: 0.8; }
+        header h1 { font-size: 1.8rem; font-weight: 900; letter-spacing: 6px; margin: 0; background: linear-gradient(180deg, #fff, var(--gold-leaf)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        header p { font-size: 0.65rem; color: var(--gold-leaf); opacity: 0.5; margin: 8px 0 25px; letter-spacing: 2px; }
 
-        .result-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr);
-            gap: 15px; margin: 20px 0; min-height: 120px;
+        /* 數字球 - 恢復質感 */
+        .result-display {
+            min-height: 120px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 25px 0;
         }
-        .result-grid.super-mode { grid-template-columns: repeat(4, 1fr); }
-
-        /* 數字球 - 確保 html2canvas 能量化的樣式 */
         .ball {
-            width: 50px; height: 50px; 
-            background-color: #ffffff !important; /* 截圖時顯示的關鍵 */
-            border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            font-size: 1.3rem; font-weight: bold;
-            color: #000000 !important; /* 修正顏色確保可見 */
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
-            margin: auto;
+            width: 48px; height: 48px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            font-size: 1.3rem; font-weight: 800; color: #600;
+            background: radial-gradient(circle at 30% 30%, #ffffff 0%, #d1d1d1 100%);
+            box-shadow: inset -3px -3px 8px rgba(0,0,0,0.2), 0 8px 15px rgba(0,0,0,0.5);
+            animation: ballIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+            position: relative;
         }
-        .ball.special {
-            background-color: var(--gold) !important;
-            color: #fff !important;
-        }
+        .ball.special { background: radial-gradient(circle at 30% 30%, #fff 0%, var(--gold-leaf) 100%); color: #430; }
+        @keyframes ballIn { 0% { transform: scale(0) rotate(-180deg); opacity: 0; } 100% { transform: scale(1) rotate(0); opacity: 1; } }
 
-        .oracle-section { opacity: 0; transition: 0.5s; margin-top: 15px; }
-        .oracle-section.show { opacity: 1; }
-        .oracle-title { color: var(--gold); font-weight: bold; font-size: 1rem; }
-        .oracle-text { font-size: 0.8rem; color: #ccc; margin-top: 5px; line-height: 1.5; }
-
-        .btn-group { margin-top: 25px; display: flex; flex-direction: column; gap: 10px; }
+        .oracle-info { opacity: 0; transform: translateY(10px); transition: 0.8s; }
+        .oracle-info.show { opacity: 1; transform: translateY(0); }
+        .oracle-tag { font-size: 0.9rem; font-weight: bold; color: #fff; text-shadow: 0 0 10px var(--gold-leaf); }
         
-        .main-btn {
-            background-color: var(--dark-red);
-            color: var(--gold);
-            border: 1px solid var(--gold);
-            padding: 15px; border-radius: 15px;
-            font-size: 1rem; font-weight: bold; cursor: pointer;
+        /* 按鈕設計 */
+        .btn-main {
+            background: linear-gradient(180deg, #b00, var(--imperial-red));
+            color: var(--gold-leaf); border: 1px solid rgba(212,175,55,0.4);
+            width: 100%; padding: 20px; border-radius: 20px; font-weight: 900; letter-spacing: 4px;
+            cursor: pointer; margin-top: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.4); transition: 0.3s;
         }
-        
-        .snap-btn {
-            background: transparent; color: #555; border: 1px solid #333;
-            padding: 10px; border-radius: 10px; font-size: 0.7rem; cursor: pointer;
+        .btn-main:active { transform: scale(0.96); }
+
+        .btn-snap {
+            background: transparent; color: rgba(212,175,55,0.4); border: none;
+            margin-top: 15px; font-size: 0.7rem; cursor: pointer; letter-spacing: 2px;
         }
 
-        /* 截圖時隱藏 */
-        .capturing .no-print { display: none !important; }
+        /* 隱藏的 Canvas 渲染輔助 */
+        .capture-overlay { position: fixed; top: -9999px; left: -9999px; }
     </style>
 </head>
 <body>
 
-    <div class="app-card" id="capture-box">
+    <div class="smoke-wrap">
+        <div class="smoke-particle" style="left: 10%;"></div>
+        <div class="smoke-particle" style="left: 50%; animation-delay: -4s;"></div>
+        <div class="smoke-particle" style="left: 80%; animation-delay: -8s;"></div>
+    </div>
+
+    <div class="app-card" id="ritual-card">
         <header>
             <h1>CAISHEN NODE</h1>
-            <p>Predictive Ritual Protocol v6.9</p>
+            <p>Predictive Ritual Protocol v7.0</p>
         </header>
 
-        <div class="result-grid" id="ball-container">
-            </div>
+        <div class="result-display" id="display"></div>
 
-        <div class="oracle-section" id="oracle-box">
-            <div class="oracle-title" id="oracle-status">-- 鑑定中 --</div>
-            <div class="oracle-text" id="oracle-desc"></div>
+        <div class="oracle-info" id="oracle">
+            <div class="oracle-tag" id="status">正在感應天機...</div>
+            <p style="font-size: 0.75rem; color: #aaa; line-height: 1.6; margin: 10px 0;" id="desc"></p>
         </div>
 
-        <div class="btn-group no-print">
-            <button class="main-btn" onclick="startRitual()">召喚財富</button>
-            <button class="snap-btn" onclick="captureImage()">CAPTURE ORACLE (擷取神諭)</button>
-        </div>
+        <button class="btn-main" id="summon-btn" onclick="summon()">召喚財富</button>
+        <button class="btn-snap" id="snap-btn" onclick="takeSnap()">CAPTURE ORACLE (擷取神諭)</button>
         
-        <div style="margin-top: 20px; font-size: 0.5rem; color: #222;">ENCRYPTED BY CAISHEN PROTOCOL</div>
+        <div style="margin-top: 25px; font-size: 0.5rem; color: rgba(212,175,55,0.2); letter-spacing: 3px;">DIVINE ALGORITHM SECURED</div>
     </div>
 
     <script>
-        let isSuperMode = false; // 預設大樂透，需要的話可以加切換
-
-        function startRitual() {
-            const container = document.getElementById('ball-container');
-            const oracle = document.getElementById('oracle-box');
-            container.innerHTML = '';
+        function summon() {
+            const display = document.getElementById('display');
+            const oracle = document.getElementById('oracle');
+            const btn = document.getElementById('summon-btn');
+            
+            display.innerHTML = '';
             oracle.classList.remove('show');
+            btn.disabled = true;
 
-            // 生成號碼
-            let nums = [];
+            // 震動回饋
+            if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
+
             let pool = Array.from({length: 49}, (_, i) => i + 1);
-            for(let i=0; i<6; i++) {
-                let idx = Math.floor(Math.random() * pool.length);
-                nums.push(pool.splice(idx, 1)[0]);
-            }
-            nums.sort((a,b) => a-b);
+            let nums = [];
+            for(let i=0; i<6; i++) nums.push(pool.splice(Math.floor(Math.random()*pool.length), 1)[0]);
+            nums.sort((a,b)=>a-b);
 
-            // 渲染球體
             nums.forEach((n, i) => {
-                const b = document.createElement('div');
-                b.className = 'ball';
-                b.innerText = n.toString().padStart(2, '0');
-                container.appendChild(b);
+                setTimeout(() => {
+                    const b = document.createElement('div');
+                    b.className = 'ball';
+                    b.innerText = n.toString().padStart(2, '0');
+                    display.appendChild(b);
+                }, i * 150);
             });
 
-            // 顯示鑑定結果
             setTimeout(() => {
                 oracle.classList.add('show');
-                document.getElementById('oracle-status').innerText = "【紫氣東來】機率感測 88%";
-                document.getElementById('oracle-desc').innerText = "檢測到強大的數值共振，此佈局符合當前財位。";
-            }, 500);
+                document.getElementById('status').innerText = "【天命所歸】機率共振 94%";
+                document.getElementById('desc').innerText = "此數組與數位星盤完美契合，磁場穩定且具有極強的穿透力，實屬上乘之選。";
+                btn.disabled = false;
+            }, 1200);
         }
 
-        async function captureImage() {
-            const box = document.getElementById('capture-box');
-            
-            // 標記截圖中
-            box.classList.add('capturing');
+        async function takeSnap() {
+            const card = document.getElementById('ritual-card');
+            const btn1 = document.getElementById('summon-btn');
+            const btn2 = document.getElementById('snap-btn');
 
-            // 給予一點點時間讓瀏覽器處理樣式切換
-            await new Promise(r => setTimeout(r, 100));
+            // 1. 準備截圖快照狀態
+            btn1.style.opacity = '0';
+            btn2.style.opacity = '0';
 
-            html2canvas(box, {
-                backgroundColor: '#050505',
-                scale: 2,
-                useCORS: true,
-                logging: false,
-                // 強制繪製文字
-                onclone: (clonedDoc) => {
-                    // 可以在這裡強制調整複製出的 DOM 樣式，確保萬無一失
-                    const clonedBalls = clonedDoc.querySelectorAll('.ball');
-                    clonedBalls.forEach(b => {
-                        b.style.display = 'flex';
-                        b.style.color = '#000000';
-                        b.style.backgroundColor = '#ffffff';
-                    });
-                }
-            }).then(canvas => {
+            // 2. 核心修正：使用 onclone 在虛擬 DOM 中移除動畫，確保球體已經「落地」
+            try {
+                const canvas = await html2canvas(card, {
+                    backgroundColor: '#050505',
+                    scale: 3,
+                    useCORS: true,
+                    allowTaint: true,
+                    onclone: (clonedDoc) => {
+                        // 在截圖用的副本中，移除所有動畫與不必要的 UI
+                        const clonedCard = clonedDoc.getElementById('ritual-card');
+                        clonedCard.style.background = '#0f0f0f'; // 強化背景色
+                        clonedCard.style.backdropFilter = 'none';
+                        
+                        const balls = clonedDoc.querySelectorAll('.ball');
+                        balls.forEach(b => {
+                            b.style.animation = 'none'; // 停止動畫
+                            b.style.opacity = '1';      // 強制顯示
+                            b.style.transform = 'scale(1)'; 
+                        });
+                    }
+                });
+
                 const link = document.createElement('a');
-                link.download = `Divine_Oracle_${Date.now()}.png`;
-                link.href = canvas.toDataURL('image/png');
+                link.download = `Caishen_Oracle_${Date.now()}.png`;
+                link.href = canvas.toDataURL('image/png', 1.0);
                 link.click();
-                box.classList.remove('capturing');
-            }).catch(err => {
-                alert("擷取失敗");
-                box.classList.remove('capturing');
-            });
+            } catch (e) {
+                alert("擷取失敗，請稍後再試");
+            } finally {
+                btn1.style.opacity = '1';
+                btn2.style.opacity = '1';
+            }
         }
     </script>
 </body>
