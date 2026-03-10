@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="CaishenNode">
     
-    <title>Caishen Node | Precision Ritual</title>
+    <title>Caishen Node | Probability Lab</title>
     
     <style>
         :root {
@@ -20,12 +20,7 @@
         body {
             font-family: 'Inter', -apple-system, sans-serif;
             background: radial-gradient(circle at center, #1a0000 0%, #050505 100%);
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden;
+            margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden;
         }
 
         .smoke-wrap { position: absolute; width: 100%; height: 100%; z-index: -1; overflow: hidden; }
@@ -38,140 +33,56 @@
             -webkit-backdrop-filter: blur(30px);
             border: 1px solid rgba(212, 175, 55, 0.25);
             border-radius: 35px;
-            width: 90%;
-            max-width: 380px;
-            padding: 40px 15px;
-            text-align: center;
-            box-shadow: 0 40px 80px rgba(0,0,0,0.8);
-            position: relative;
-            box-sizing: border-box;
+            width: 90%; max-width: 380px; padding: 35px 15px; text-align: center; box-shadow: 0 40px 80px rgba(0,0,0,0.8); position: relative; box-sizing: border-box;
         }
 
-        header h1 {
-            font-size: 1.6rem;
-            font-weight: 900;
-            letter-spacing: 5px;
-            margin: 0;
-            background: linear-gradient(180deg, #fff, var(--gold-leaf));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+        header h1 { font-size: 1.6rem; font-weight: 900; letter-spacing: 5px; margin: 0; background: linear-gradient(180deg, #fff, var(--gold-leaf)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        header p { font-size: 0.6rem; color: var(--gold-leaf); opacity: 0.4; margin-top: 5px; margin-bottom: 20px; letter-spacing: 2px; }
 
-        header p { font-size: 0.65rem; color: var(--gold-leaf); opacity: 0.4; margin-top: 8px; margin-bottom: 25px; letter-spacing: 3px; }
+        .mode-selector { display: flex; background: rgba(0, 0, 0, 0.5); border-radius: 15px; padding: 6px; margin-bottom: 20px; border: 1px solid rgba(212, 175, 55, 0.1); gap: 10px; }
+        .mode-btn { flex: 1; padding: 10px; border: none; background: transparent; color: #555; font-weight: 800; font-size: 0.75rem; cursor: pointer; transition: 0.4s; border-radius: 10px; }
+        .mode-btn.active { background: var(--imperial-red); color: var(--gold-leaf); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
 
-        /* 1. 改善黏在一起的問題 */
-        .mode-selector {
-            display: flex;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 15px;
-            padding: 6px;
-            margin-bottom: 25px;
-            border: 1px solid rgba(212, 175, 55, 0.1);
-            gap: 10px; /* 增加按鈕之間的間距 */
-        }
-
-        .mode-btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            background: transparent;
-            color: #555;
-            font-weight: 800;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: 0.4s;
-            border-radius: 10px;
-        }
-
-        .mode-btn.active { 
-            background: var(--imperial-red); 
-            color: var(--gold-leaf);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-
-        .ritual-zone {
-            height: 100px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            margin-bottom: 10px;
-        }
-
-        .censer-wrap { position: absolute; bottom: 0; display: flex; flex-direction: column; align-items: center; opacity: 0.3; transition: 0.5s; }
+        /* Ritual Zone */
+        .ritual-zone { height: 80px; display: flex; justify-content: center; align-items: center; position: relative; }
+        .censer-wrap { position: absolute; bottom: 0; display: flex; flex-direction: column; align-items: center; opacity: 0.2; transition: 0.5s; }
         .app-card.ritual-active .censer-wrap { opacity: 1; }
-        .incense-sticks { display: flex; gap: 6px; margin-bottom: -5px; }
-        .stick { width: 3px; height: 50px; background: #5c3a21; border-radius: 2px; position: relative; }
-        .stick::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px; background: #333; border-radius: 2px; transition: 0.3s; }
-        .app-card.ritual-active .stick::after { background: #ffc9a8; box-shadow: 0 0 10px #ff9e61, 0 0 5px #fff; }
-        .censer { width: 50px; height: 25px; background: linear-gradient(180deg, #444, #222); border-radius: 0 0 12px 12px; border: 1.5px solid #444; }
+        .incense-sticks { display: flex; gap: 5px; }
+        .stick { width: 2px; height: 40px; background: #5c3a21; position: relative; }
+        .app-card.ritual-active .stick::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: #ffc9a8; box-shadow: 0 0 8px #ff9e61; }
+        .censer { width: 40px; height: 20px; background: #333; border-radius: 0 0 10px 10px; }
 
-        .blocks-wrap { display: flex; gap: 20px; opacity: 0; transform: translateY(-10px); transition: 0.5s; }
+        .blocks-wrap { display: flex; gap: 15px; opacity: 0; transform: translateY(-10px); transition: 0.5s; }
         .app-card.ritual-active .blocks-wrap { opacity: 1; transform: translateY(0); }
-        .block { width: 35px; height: 55px; background: var(--vivid-red); position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.5); border-radius: 50% 10% 10% 50% / 50% 10% 10% 50%; }
+        .block { width: 30px; height: 50px; background: var(--vivid-red); border-radius: 50% 10% 10% 50% / 50% 10% 10% 50%; box-shadow: 0 5px 10px rgba(0,0,0,0.5); transition: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .block-1.flat-up { background: #eee; border: 1.5px solid #ccc; transform: rotateY(180deg); }
         @keyframes toss { 0% { transform: translate(0, 0) rotate(0deg); } 50% { transform: translate(-10px, -40px) rotate(180deg); } 100% { transform: translate(0, 0) rotate(360deg); } }
         .app-card.tossing .block { animation: toss 0.7s ease-out; }
 
-        /* 2. 改善數字排版問題 */
+        /* Display Alignment */
         .result-display {
-            min-height: 120px;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 預設 3 欄，大樂透會變成 3+3 */
-            justify-items: center;
-            align-items: center;
-            gap: 15px 10px;
-            margin: 20px auto 35px;
-            max-width: 280px;
+            min-height: 110px; display: grid; grid-template-columns: repeat(3, 1fr); justify-items: center; align-items: center; gap: 12px 8px; margin: 15px auto; max-width: 260px;
         }
-
-        /* 威力彩特殊排版：前 6 顆號碼維持格狀，最後一顆特別號置中 */
-        .result-display.weili-mode {
-            grid-template-columns: repeat(4, 1fr); /* 威力彩改為 4 欄，變成 4+3 */
-        }
+        .result-display.weili-mode { grid-template-columns: repeat(4, 1fr); }
 
         .ball {
-            width: 42px; /* 稍微縮小以適應手機一行排開的需求 */
-            height: 42px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.15rem;
-            font-weight: 800;
-            background: radial-gradient(circle at 30% 30%, #fff 0%, #cfcfcf 100%);
-            color: #600;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.5);
-            animation: ballPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.2) both;
+            width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.1rem; font-weight: 800; background: radial-gradient(circle at 30% 30%, #fff 0%, #cfcfcf 100%); color: #600; box-shadow: 0 5px 10px rgba(0,0,0,0.5); animation: ballPop 0.5s both;
         }
-
-        .ball.special { 
-            background: radial-gradient(circle at 30% 30%, #fff 0%, var(--gold-leaf) 100%); 
-            color: #430; 
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
-        }
-
+        .ball.special { background: radial-gradient(circle at 30% 30%, #fff 0%, var(--gold-leaf) 100%); color: #430; box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }
         @keyframes ballPop { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-        .action-btn {
-            background: linear-gradient(180deg, #900 0%, var(--imperial-red) 100%);
-            color: var(--gold-leaf);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            width: 100%;
-            padding: 20px;
-            font-size: 1rem;
-            font-weight: 900;
-            border-radius: 18px;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 5px;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
-            transition: 0.3s;
-        }
+        /* Probability Meter - New Feature */
+        .prob-meter-wrap { margin-bottom: 25px; padding: 0 20px; opacity: 0; transition: 0.8s; }
+        .prob-meter-wrap.show { opacity: 1; }
+        .prob-label { font-size: 0.65rem; color: var(--gold-leaf); letter-spacing: 2px; margin-bottom: 8px; display: flex; justify-content: space-between; }
+        .prob-bar-bg { width: 100%; height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px; overflow: hidden; }
+        .prob-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--imperial-red), var(--gold-leaf)); transition: width 1.5s cubic-bezier(0.1, 0, 0.2, 1); }
+
+        .action-btn { background: linear-gradient(180deg, #900 0%, var(--imperial-red) 100%); color: var(--gold-leaf); border: 1px solid rgba(212, 175, 55, 0.3); width: 100%; padding: 18px; font-size: 0.95rem; font-weight: 900; border-radius: 18px; cursor: pointer; text-transform: uppercase; letter-spacing: 5px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); transition: 0.3s; }
         .action-btn:disabled { opacity: 0.5; }
         .action-btn:active { transform: scale(0.97); }
 
-        .footer-note { margin-top: 25px; font-size: 0.55rem; color: rgba(212, 175, 55, 0.2); letter-spacing: 2px; }
+        .footer-note { margin-top: 20px; font-size: 0.5rem; color: rgba(212, 175, 55, 0.15); letter-spacing: 2px; }
     </style>
 </head>
 <body>
@@ -185,7 +96,7 @@
     <div class="app-card" id="app-card">
         <header>
             <h1>CAISHEN NODE</h1>
-            <p>Animated Blessing Protocol v3.1</p>
+            <p>Predictive Ritual Protocol v4.0</p>
         </header>
         
         <div class="mode-selector">
@@ -194,21 +105,23 @@
         </div>
 
         <div class="ritual-zone">
-            <div class="censer-wrap">
-                <div class="incense-sticks"><div class="stick"></div><div class="stick" style="height: 60px;"></div><div class="stick"></div></div>
-                <div class="censer"></div>
-            </div>
-            <div class="blocks-wrap" id="blocks-wrap">
-                <div class="block block-1" id="block-1"></div>
-                <div class="block block-2" id="block-2"></div>
-            </div>
+            <div class="censer-wrap"><div class="incense-sticks"><div class="stick"></div><div class="stick" style="height: 50px;"></div><div class="stick"></div></div><div class="censer"></div></div>
+            <div class="blocks-wrap"><div class="block" id="block-1"></div><div class="block" id="block-2"></div></div>
         </div>
 
         <div class="result-display" id="display"></div>
 
-        <button class="action-btn" id="main-btn" onclick="performAnimatedRitual()">Invoke Divine</button>
+        <div class="prob-meter-wrap" id="prob-wrap">
+            <div class="prob-label">
+                <span>DIVINE PROBABILITY</span>
+                <span id="prob-value">0%</span>
+            </div>
+            <div class="prob-bar-bg"><div class="prob-bar-fill" id="prob-fill"></div></div>
+        </div>
+
+        <button class="action-btn" id="main-btn" onclick="performRitual()">Invoke Divine</button>
         
-        <div class="footer-note">Divine Algorithm Secured</div>
+        <div class="footer-note">Divine Algorithm Secured • Real-time Sync</div>
     </div>
 
     <script>
@@ -218,72 +131,104 @@
             mode = newMode;
             document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`tab-${newMode}`).classList.add('active');
-            
-            const display = document.getElementById('display');
-            display.innerHTML = '';
-            // 切換模式時改變 Grid 佈局
-            if(newMode === 'super') {
-                display.classList.add('weili-mode');
-            } else {
-                display.classList.remove('weili-mode');
-            }
+            document.getElementById('display').innerHTML = '';
+            document.getElementById('display').className = 'result-display' + (newMode === 'super' ? ' weili-mode' : '');
+            document.getElementById('prob-wrap').classList.remove('show');
             resetRitual();
         }
 
         function resetRitual() {
-            const card = document.getElementById('app-card');
-            const b1 = document.getElementById('block-1');
-            card.classList.remove('ritual-active', 'tossing');
-            b1.classList.remove('flat-up');
+            document.getElementById('app-card').classList.remove('ritual-active', 'tossing');
+            document.getElementById('block-1').classList.remove('flat-up');
         }
 
-        async function performAnimatedRitual() {
-            const card = document.getElementById('app-card');
+        async function performRitual() {
             const display = document.getElementById('display');
             const btn = document.getElementById('main-btn');
-            const b1 = document.getElementById('block-1');
+            const probWrap = document.getElementById('prob-wrap');
+            const probFill = document.getElementById('prob-fill');
+            const probVal = document.getElementById('prob-value');
 
             display.innerHTML = '';
+            probWrap.classList.remove('show');
+            probFill.style.width = '0%';
             resetRitual();
             btn.disabled = true;
             
-            card.classList.add('ritual-active');
+            // Phase 1: Incense & Blocks
+            document.getElementById('app-card').classList.add('ritual-active');
             if (window.navigator.vibrate) window.navigator.vibrate(50);
             await new Promise(r => setTimeout(r, 700));
 
-            card.classList.add('tossing');
+            // Phase 2: Tossing
+            document.getElementById('app-card').classList.add('tossing');
             if (window.navigator.vibrate) window.navigator.vibrate([30, 80, 30, 80]);
             await new Promise(r => setTimeout(r, 700));
 
-            card.classList.remove('tossing');
-            b1.classList.add('flat-up'); // 聖筊
-            
+            // Phase 3: Land
+            document.getElementById('app-card').classList.remove('tossing');
+            document.getElementById('block-1').classList.add('flat-up');
             if (window.navigator.vibrate) window.navigator.vibrate([200, 100, 200]);
-            await new Promise(r => setTimeout(r, 600));
+            await new Promise(r => setTimeout(r, 500));
 
+            // Phase 4: Draw Numbers & Calc Score
+            let finalNumbers = [];
             if (mode === 'lotto') {
-                pick(49, 6).forEach((n, i) => {
-                    setTimeout(() => addBall(n, false), i * 100);
-                });
+                finalNumbers = pick(49, 6);
+                finalNumbers.forEach((n, i) => setTimeout(() => addBall(n, false), i * 100));
             } else {
-                // 威力彩 6+1
-                const nums = pick(38, 6);
+                finalNumbers = pick(38, 6);
                 const spec = Math.floor(Math.random() * 8) + 1;
-                nums.forEach((n, i) => {
-                    setTimeout(() => addBall(n, false), i * 100);
-                });
+                finalNumbers.forEach((n, i) => setTimeout(() => addBall(n, false), i * 100));
                 setTimeout(() => addBall(spec, true), 700);
             }
 
-            setTimeout(() => { btn.disabled = false; }, 1200);
+            // Phase 5: Reveal Probability
+            setTimeout(() => {
+                const score = calculateScore(finalNumbers);
+                probWrap.classList.add('show');
+                probFill.style.width = score + '%';
+                animateValue(probVal, 0, score, 1500);
+            }, 800);
+
+            setTimeout(() => { btn.disabled = false; }, 2000);
+        }
+
+        // --- Caishen Algorithm Logic ---
+        function calculateScore(nums) {
+            // Base score: 60-85% (Everyone deserves a chance!)
+            let score = Math.floor(Math.random() * 25) + 60;
+            
+            // Logic 1: Check for Consecutive Numbers (玄學：連號財氣旺)
+            let hasConsecutive = false;
+            for(let i=0; i<nums.length-1; i++) {
+                if(nums[i+1] - nums[i] === 1) hasConsecutive = true;
+            }
+            if(hasConsecutive) score += 5;
+
+            // Logic 2: Balance check (Odd/Even)
+            const odds = nums.filter(n => n % 2 !== 0).length;
+            if(odds >= 2 && odds <= 4) score += 5;
+
+            // Cap it at 99% (To avoid over-promising!)
+            return Math.min(score, 99);
+        }
+
+        function animateValue(obj, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start) + "%";
+                if (progress < 1) { window.requestAnimationFrame(step); }
+            };
+            window.requestAnimationFrame(step);
         }
 
         function pick(max, count) {
             let p = Array.from({length: max}, (_, i) => i + 1);
             let res = [];
-            for(let i=0; i<count; i++) {
-                res.push(p.splice(Math.floor(Math.random() * p.length), 1)[0]);
-            }
+            for(let i=0; i<count; i++) { res.push(p.splice(Math.floor(Math.random() * p.length), 1)[0]); }
             return res.sort((a,b) => a-b);
         }
 
