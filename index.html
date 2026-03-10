@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Caishen Node v7.1 | 數位祭壇完全體</title>
+    <title>Caishen Node v7.2 | 財神節點</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
@@ -36,24 +36,22 @@
         }
 
         header h1 { font-size: 1.6rem; font-weight: 900; letter-spacing: 5px; margin: 0; background: linear-gradient(180deg, #fff, var(--gold-leaf)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        header p { font-size: 0.6rem; color: var(--gold-leaf); opacity: 0.5; margin: 5px 0 20px; letter-spacing: 2px; text-transform: uppercase; }
+        header p { font-size: 0.6rem; color: var(--gold-leaf); opacity: 0.5; margin: 5px 0 20px; letter-spacing: 2px; }
 
-        /* 模式切換 */
         .mode-selector { display: flex; background: rgba(0, 0, 0, 0.5); border-radius: 15px; padding: 5px; margin-bottom: 20px; border: 1px solid rgba(212, 175, 55, 0.1); gap: 5px; }
         .mode-btn { flex: 1; padding: 10px; border: none; background: transparent; color: #555; font-weight: 800; font-size: 0.75rem; cursor: pointer; border-radius: 10px; transition: 0.3s; }
         .mode-btn.active { background: var(--imperial-red); color: var(--gold-leaf); }
 
-        /* 數字球 - 確保文字置中 */
+        /* 數字球 - 強化置中與質感 */
         .result-display {
-            min-height: 120px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 20px 0; justify-items: center;
+            min-height: 120px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 20px 0; justify-items: center; align-items: center;
         }
         .result-display.super-mode { grid-template-columns: repeat(4, 1fr); }
         
         .ball {
-            width: 48px; height: 48px; border-radius: 50%; 
-            display: flex; justify-content: center; align-items: center; /* 核心置中語法 */
-            line-height: 1; /* 消除行高干擾 */
-            font-size: 1.3rem; font-weight: 800; color: #600;
+            width: 50px; height: 50px; border-radius: 50%; 
+            display: flex; justify-content: center; align-items: center;
+            line-height: 1; font-size: 1.3rem; font-weight: 800; color: #600;
             background: radial-gradient(circle at 30% 30%, #ffffff 0%, #d1d1d1 100%);
             box-shadow: inset -3px -3px 8px rgba(0,0,0,0.2), 0 8px 15px rgba(0,0,0,0.5);
             animation: ballIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
@@ -61,23 +59,53 @@
         .ball.special { background: radial-gradient(circle at 30% 30%, #fff 0%, var(--gold-leaf) 100%); color: #430; }
         @keyframes ballIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-        /* 解籤區塊 - 預設摺疊 */
-        .oracle-info { max-height: 0; opacity: 0; overflow: hidden; transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
-        .oracle-info.show { max-height: 250px; opacity: 1; margin-top: 15px; }
-        .oracle-tag { font-size: 0.85rem; font-weight: bold; color: #fff; text-shadow: 0 0 10px var(--gold-leaf); }
-        .oracle-desc { font-size: 0.72rem; color: #aaa; line-height: 1.6; margin: 10px 0; text-align: left; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 15px; }
+        /* 解籤區塊 - 手動觸發展開 */
+        .oracle-wrapper { margin-top: 15px; display: none; }
+        .oracle-wrapper.visible { display: block; }
+        
+        .oracle-fold-btn {
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--gold-leaf); border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 8px 15px; border-radius: 20px; font-size: 0.75rem; cursor: pointer;
+            transition: 0.3s; margin-bottom: 10px;
+        }
+        .oracle-fold-btn:hover { background: rgba(212, 175, 55, 0.2); }
+
+        .oracle-content { 
+            max-height: 0; opacity: 0; overflow: hidden; 
+            transition: all 0.5s ease; text-align: left;
+            background: rgba(0,0,0,0.3); border-radius: 15px;
+        }
+        .oracle-content.open { max-height: 200px; opacity: 1; padding: 15px; border: 1px solid rgba(255,255,255,0.05); }
+
+        .oracle-tag { font-size: 0.85rem; font-weight: bold; color: #fff; text-shadow: 0 0 8px var(--gold-leaf); margin-bottom: 5px; display: block; }
+        .oracle-desc { font-size: 0.72rem; color: #aaa; line-height: 1.6; margin: 0; }
+
+        /* 按鈕區域 */
+        .action-area { margin-top: 25px; display: flex; flex-direction: column; gap: 12px; }
 
         .btn-main {
             background: linear-gradient(180deg, #b00, var(--imperial-red));
             color: var(--gold-leaf); border: 1px solid rgba(212,175,55,0.4);
-            width: 100%; padding: 18px; border-radius: 18px; font-weight: 900; letter-spacing: 4px;
-            cursor: pointer; margin-top: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.4); transition: 0.3s;
+            padding: 18px; border-radius: 18px; font-weight: 900; letter-spacing: 4px;
+            cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.4); transition: 0.3s;
         }
         .btn-main:active { transform: scale(0.96); }
-        .btn-snap { background: transparent; color: rgba(212,175,55,0.3); border: none; margin-top: 15px; font-size: 0.65rem; cursor: pointer; letter-spacing: 2px; }
+
+        .btn-snap {
+            background: rgba(212, 175, 55, 0.05);
+            color: var(--gold-leaf); border: 1px solid rgba(212, 175, 55, 0.2);
+            padding: 12px; border-radius: 15px; font-weight: 600; font-size: 0.75rem;
+            cursor: pointer; letter-spacing: 2px; transition: 0.3s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-snap:hover { background: rgba(212, 175, 55, 0.15); border-color: var(--gold-leaf); }
+        .btn-snap::before { content: '📸'; font-size: 0.9rem; }
 
         /* 截圖模式隱藏 */
         .screenshotting .no-capture { display: none !important; }
+        .screenshotting .oracle-fold-btn { display: none !important; }
+        .screenshotting .oracle-content { max-height: none; opacity: 1; padding: 15px; }
     </style>
 </head>
 <body>
@@ -91,7 +119,7 @@
     <div class="app-card" id="ritual-card">
         <header>
             <h1>CAISHEN NODE</h1>
-            <p>Predictive Ritual Protocol v7.1</p>
+            <p>Predictive Ritual Protocol v7.2</p>
         </header>
 
         <div class="mode-selector no-capture">
@@ -101,13 +129,18 @@
 
         <div class="result-display" id="display"></div>
 
-        <div class="oracle-info" id="oracle">
-            <div class="oracle-tag" id="status">【紫氣東來】</div>
-            <div class="oracle-desc" id="desc"></div>
+        <div class="oracle-wrapper" id="oracle-wrapper">
+            <button class="oracle-fold-btn" id="fold-btn" onclick="toggleOracle()">解鎖財神神諭</button>
+            <div class="oracle-content" id="oracle-content">
+                <span class="oracle-tag" id="status">【鑑定中】</span>
+                <p class="oracle-desc" id="desc"></p>
+            </div>
         </div>
 
-        <button class="btn-main no-capture" id="summon-btn" onclick="summon()">召喚財富</button>
-        <button class="btn-snap no-capture" id="snap-btn" onclick="takeSnap()">CAPTURE ORACLE (擷取神諭)</button>
+        <div class="action-area no-capture">
+            <button class="btn-main" id="summon-btn" onclick="summon()">召喚財富</button>
+            <button class="btn-snap" id="snap-btn" onclick="takeSnap()">CAPTURE ORACLE (擷取神諭)</button>
+        </div>
         
         <div style="margin-top: 20px; font-size: 0.5rem; color: rgba(212,175,55,0.15); letter-spacing: 3px;">DIVINE ALGORITHM SECURED</div>
     </div>
@@ -121,26 +154,36 @@
             document.getElementById(`mode-${m}`).classList.add('active');
             document.getElementById('display').innerHTML = '';
             document.getElementById('display').className = 'result-display' + (m === 'super' ? ' super-mode' : '');
-            document.getElementById('oracle').classList.remove('show');
+            document.getElementById('oracle-wrapper').classList.remove('visible');
+            document.getElementById('oracle-content').classList.remove('open');
+        }
+
+        function toggleOracle() {
+            const content = document.getElementById('oracle-content');
+            const btn = document.getElementById('fold-btn');
+            content.classList.toggle('open');
+            btn.innerText = content.classList.contains('open') ? '收起神諭' : '解鎖財神神諭';
         }
 
         function summon() {
             const display = document.getElementById('display');
-            const oracle = document.getElementById('oracle');
+            const wrapper = document.getElementById('oracle-wrapper');
+            const content = document.getElementById('oracle-content');
             const btn = document.getElementById('summon-btn');
             
             display.innerHTML = '';
-            oracle.classList.remove('show');
+            wrapper.classList.remove('visible');
+            content.classList.remove('open');
+            document.getElementById('fold-btn').innerText = '解鎖財神神諭';
             btn.disabled = true;
 
             if (navigator.vibrate) navigator.vibrate(50);
 
-            let nums = [];
             let pool = Array.from({length: (currentMode === 'lotto' ? 49 : 38)}, (_, i) => i + 1);
+            let nums = [];
             for(let i=0; i<6; i++) nums.push(pool.splice(Math.floor(Math.random()*pool.length), 1)[0]);
             nums.sort((a,b)=>a-b);
 
-            // 渲染球
             nums.forEach((n, i) => {
                 setTimeout(() => {
                     const b = document.createElement('div');
@@ -150,7 +193,6 @@
                 }, i * 120);
             });
 
-            // 威力彩特別號
             if (currentMode === 'super') {
                 setTimeout(() => {
                     const sb = document.createElement('div');
@@ -160,19 +202,32 @@
                 }, 800);
             }
 
-            // 延遲展示解籤
+            // 修正機率演算法：絕大多數落在 30-75%
             setTimeout(() => {
-                oracle.classList.add('show');
-                const lucks = ["天命所歸", "紫氣東來", "金玉滿堂", "龍脈相連"];
-                const descs = [
-                    "此數組與數位星盤產生強烈共鳴，磁場穩定且具有極強的穿透力，實屬上乘之選。",
-                    "檢測到財帛位有明顯波動，此數字排列隱含乾坤定數，建議心誠則靈。",
-                    "五行水火既濟，此佈局符合當前時空節點的財富路徑，建議善加利用。",
-                    "連珠炮發之勢，號碼間存在隱性關聯，象徵財源滾滾，連綿不絕。"
-                ];
-                const idx = Math.floor(Math.random()*lucks.length);
-                document.getElementById('status').innerText = `【${lucks[idx]}】機率共振 ${Math.floor(Math.random()*20+80)}%`;
-                document.getElementById('desc').innerText = descs[idx];
+                wrapper.classList.add('visible');
+                const roll = Math.random();
+                let luck, desc, prob;
+
+                if (roll > 0.97) { // 3% 極低機率
+                    prob = Math.floor(Math.random() * 8) + 92;
+                    luck = "天命所歸";
+                    desc = "萬中無一的極致卦象。此組號碼與當前時空節點產生絕對共振，數位虛空中乾坤定數已現。";
+                } else if (roll > 0.85) { // 12% 機率
+                    prob = Math.floor(Math.random() * 10) + 81;
+                    luck = "紫氣東來";
+                    desc = "強大的財氣波動。號碼佈局符合紫微財宮趨勢，具有極強的穿透力，實屬上乘。";
+                } else if (roll > 0.4) { // 大多數情況
+                    prob = Math.floor(Math.random() * 30) + 50;
+                    luck = "五行和諧";
+                    desc = "佈局平實穩重，數值跨度適中。雖無瞬間爆發之勢，但根基穩固，細水長流。";
+                } else {
+                    prob = Math.floor(Math.random() * 20) + 25;
+                    luck = "潛龍勿用";
+                    desc = "氣場處於沉澱期。這組號碼象徵「守」，適合小試牛刀，等待下次數位洪流的到來。";
+                }
+
+                document.getElementById('status').innerText = `【${luck}】機率共振 ${prob}%`;
+                document.getElementById('desc').innerText = desc;
                 btn.disabled = false;
             }, 1000);
         }
@@ -187,13 +242,11 @@
                     scale: 3,
                     useCORS: true,
                     onclone: (clonedDoc) => {
-                        clonedDoc.getElementById('oracle').style.maxHeight = 'none';
-                        clonedDoc.getElementById('oracle').style.opacity = '1';
-                        const balls = clonedDoc.querySelectorAll('.ball');
-                        balls.forEach(b => {
-                            b.style.animation = 'none';
-                            b.style.opacity = '1';
-                        });
+                        // 截圖時強制顯示已展開的神諭
+                        const content = clonedDoc.getElementById('oracle-content');
+                        content.style.maxHeight = 'none';
+                        content.style.opacity = '1';
+                        content.style.padding = '15px';
                     }
                 });
 
