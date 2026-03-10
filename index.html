@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="財神節點">
     
-    <title>Caishen Node | 財神數位祭壇 v6.5</title>
+    <title>Caishen Node | 財神數位祭壇 v6.6</title>
     
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     
@@ -30,7 +30,7 @@
         @keyframes rise { 0% { transform: translateY(0) scale(1); opacity: 0; } 10% { opacity: 1; } 100% { transform: translateY(-120vh) scale(1.8); opacity: 0; } }
 
         .app-card {
-            background: rgba(15, 15, 15, 0.95); /* 稍微調深，截圖更好看 */
+            background: rgba(15, 15, 15, 0.95);
             backdrop-filter: blur(30px);
             -webkit-backdrop-filter: blur(30px);
             border: 1px solid rgba(212, 175, 55, 0.25);
@@ -87,13 +87,13 @@
         .details-content.open { max-height: 300px; padding: 15px; border: 1px solid rgba(255,255,255,0.05); }
         .details-text { font-size: 0.72rem; color: #ccc; text-align: left; line-height: 1.7; margin: 0; }
 
-        .action-btn { background: linear-gradient(180deg, #900 0%, var(--imperial-red) 100%); color: var(--gold-leaf); border: 1px solid rgba(212, 175, 55, 0.3); width: 100%; padding: 18px; font-size: 0.95rem; font-weight: 900; border-radius: 18px; cursor: pointer; text-transform: uppercase; letter-spacing: 5px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); margin-bottom: 15px; }
+        .action-btn { background: linear-gradient(180deg, #900 0%, var(--imperial-red) 100%); color: var(--gold-leaf); border: 1px solid rgba(212, 175, 55, 0.3); width: 100%; padding: 18px; font-size: 0.95rem; font-weight: 900; border-radius: 18px; cursor: pointer; text-transform: uppercase; letter-spacing: 5px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); margin-bottom: 15px; transition: 0.3s; }
+        .action-btn:active { transform: scale(0.98); }
+        .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         
-        /* 截圖按鈕樣式 */
         .screenshot-btn { background: transparent; color: rgba(212, 175, 55, 0.4); border: 1px solid rgba(212, 175, 55, 0.15); width: 100%; padding: 12px; font-size: 0.7rem; border-radius: 12px; cursor: pointer; letter-spacing: 2px; transition: 0.3s; }
         .screenshot-btn:hover { color: var(--gold-leaf); border-color: var(--gold-leaf); background: rgba(212, 175, 55, 0.05); }
 
-        .action-btn:disabled { opacity: 0.5; }
         .footer-note { margin-top: 20px; font-size: 0.5rem; color: rgba(212, 175, 55, 0.15); letter-spacing: 2px; text-transform: uppercase; }
     </style>
 </head>
@@ -105,13 +105,13 @@
         <div class="smoke-particle" style="left: 80%; animation-delay: -8s;"></div>
     </div>
 
-    <div class="app-card" id="capture-area">
+    <div class="app-card" id="app-card">
         <header>
             <h1>CAISHEN NODE</h1>
-            <p>Predictive Ritual Protocol v6.5</p>
+            <p>Predictive Ritual Protocol v6.6</p>
         </header>
         
-        <div class="mode-selector" id="ui-hide-1">
+        <div class="mode-selector" id="ui-mode-wrap">
             <button class="mode-btn active" id="tab-lotto" onclick="switchMode('lotto')">大樂透</button>
             <button class="mode-btn" id="tab-super" onclick="switchMode('super')">威力彩</button>
         </div>
@@ -130,14 +130,13 @@
             </div>
             <div class="prob-bar-bg"><div class="prob-bar-fill" id="prob-fill"></div></div>
             
-            <button class="details-toggle" id="ui-hide-2" onclick="toggleDetails()">查看財神解籤</button>
+            <button class="details-toggle" id="ui-details-btn" onclick="toggleDetails()">查看財神解籤</button>
             <div class="details-content" id="details-box">
                 <p class="details-text" id="details-explanation"></p>
             </div>
         </div>
 
         <button class="action-btn" id="main-btn" onclick="performRitual()">召喚財富</button>
-        
         <button class="screenshot-btn" id="screenshot-btn" onclick="takeScreenshot()">CAPTURE ORACLE (擷取神諭)</button>
         
         <div class="footer-note">Divine Algorithm Secured • 儀式同步中</div>
@@ -166,42 +165,38 @@
             document.getElementById('block-1').classList.remove('flat-up');
         }
 
-        // --- 截圖核心功能 ---
         async function takeScreenshot() {
-            const area = document.getElementById('capture-area');
-            const btn = document.getElementById('screenshot-btn');
-            const h1 = document.getElementById('ui-hide-1');
-            const h2 = document.getElementById('ui-hide-2');
-            const mainBtn = document.getElementById('main-btn');
+            const area = document.getElementById('app-card');
+            const btn1 = document.getElementById('main-btn');
+            const btn2 = document.getElementById('screenshot-btn');
+            const uiMode = document.getElementById('ui-mode-wrap');
+            const uiDetailBtn = document.getElementById('ui-details-btn');
 
-            // 暫時隱藏不必要的 UI 讓截圖更乾淨
-            btn.style.opacity = '0';
-            mainBtn.style.opacity = '0';
-            h1.style.opacity = '0';
-            if(!document.getElementById('details-box').classList.contains('open')) h2.style.opacity = '0';
+            // 隱藏雜項按鈕
+            btn1.style.visibility = 'hidden';
+            btn2.style.visibility = 'hidden';
+            uiMode.style.opacity = '0';
+            if(!document.getElementById('details-box').classList.contains('open')) uiDetailBtn.style.opacity = '0';
 
             try {
                 const canvas = await html2canvas(area, {
                     backgroundColor: '#050505',
-                    borderRadius: 35,
-                    scale: 2, // 提高解析度
+                    scale: 2,
+                    logging: false,
                     useCORS: true
                 });
 
-                // 創建下載連結
                 const link = document.createElement('a');
-                link.download = `Caishen_Oracle_${new Date().getTime()}.png`;
+                link.download = `Caishen_Oracle_${Date.now()}.png`;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
             } catch (err) {
-                console.error("截圖失敗:", err);
-                alert("擷取失敗，請確認瀏覽器權限。");
+                alert("擷取失敗，請確認權限");
             } finally {
-                // 恢復 UI
-                btn.style.opacity = '1';
-                mainBtn.style.opacity = '1';
-                h1.style.opacity = '1';
-                h2.style.opacity = '1';
+                btn1.style.visibility = 'visible';
+                btn2.style.visibility = 'visible';
+                uiMode.style.opacity = '1';
+                uiDetailBtn.style.opacity = '1';
             }
         }
 
@@ -214,27 +209,33 @@
             const probReason = document.getElementById('prob-reason');
             const detailsBox = document.getElementById('details-box');
             const detailsTxt = document.getElementById('details-explanation');
+            const appCard = document.getElementById('app-card');
 
             display.innerHTML = '';
             probWrap.classList.remove('show');
             detailsBox.classList.remove('open');
             probFill.style.width = '0%';
             resetRitual();
+            
             btn.disabled = true;
             
-            document.getElementById('capture-area').classList.add('ritual-active');
+            // 點香
+            appCard.classList.add('ritual-active');
             if (window.navigator.vibrate) window.navigator.vibrate(50);
             await new Promise(r => setTimeout(r, 700));
 
-            document.getElementById('capture-area').classList.add('tossing');
+            // 擲筊
+            appCard.classList.add('tossing');
             if (window.navigator.vibrate) window.navigator.vibrate([30, 80, 30, 80]);
             await new Promise(r => setTimeout(r, 700));
 
-            document.getElementById('capture-area').classList.remove('tossing');
+            // 結果
+            appCard.classList.remove('tossing');
             document.getElementById('block-1').classList.add('flat-up');
             if (window.navigator.vibrate) window.navigator.vibrate([200, 100, 200]);
             await new Promise(r => setTimeout(r, 500));
 
+            // 出號
             let finalNumbers = [];
             if (mode === 'lotto') {
                 finalNumbers = pick(49, 6);
@@ -246,6 +247,7 @@
                 setTimeout(() => addBall(spec, true), 700);
             }
 
+            // 計算分數
             setTimeout(() => {
                 const result = calculateOracle(finalNumbers);
                 probWrap.classList.add('show');
@@ -253,9 +255,8 @@
                 detailsTxt.innerHTML = result.explanation;
                 probFill.style.width = result.score + '%';
                 animateValue(probVal, 0, result.score, 1500);
+                btn.disabled = false; // 恢復按鈕
             }, 900);
-
-            setTimeout(() => { btn.disabled = false; }, 2200);
         }
 
         function calculateOracle(nums) {
@@ -265,14 +266,14 @@
             const odds = nums.filter(n => n % 2 !== 0).length;
             let score, reason, explanation;
 
-            if (roll > 0.97) { 
+            if (roll > 0.95) { 
                 score = Math.floor(Math.random() * 9) + 90;
                 reason = "天命所歸 (DIVINE ALIGNMENT)";
-                explanation = "<strong>【天命大吉】</strong><br>此組號碼與當前時空節點產生絕對共振。在數位虛空中，這象徵乾坤定數已現。這不是機率的結果，而是能量匯聚的終點。";
+                explanation = "<strong>【天命大吉】</strong><br>此組號碼與當前時空節點產生絕對共振。在數位虛空中，這象徵乾坤定數已現。";
             } else if (roll > 0.85) {
                 score = Math.floor(Math.random() * 19) + 70;
                 reason = "紫氣東來 (AUSPICIOUS RADIANCE)";
-                explanation = "<strong>【大吉之兆】</strong><br>數字跨度與當前磁場高度吻合。數理中隱含「水火既濟」之勢，預示著強大的財富吸引力，是極為優秀的選擇。";
+                explanation = "<strong>【大吉之兆】</strong><br>數字跨度與當前磁場高度吻合。數理中隱含「水火既濟」之勢。";
             } else {
                 score = Math.floor(Math.random() * 30) + 15;
                 if (sum > 180) {
@@ -280,16 +281,16 @@
                     explanation = "<strong>【重數之美】</strong><br>號碼總和偏高，象徵陽氣旺盛，具有壓制貧瘠、匯聚財源的氣勢。";
                 } else if (spread < 20) {
                     score += 12; reason = "聚寶盆效應 (CLUSTER LUCK)";
-                    explanation = "<strong>【能量匯聚】</strong><br>號碼分布極度集中。這象徵財富不散、精準打擊，能在特定維度爆發出驚人的共鳴。";
+                    explanation = "<strong>【能量匯聚】</strong><br>號碼分布極度集中。這象徵財富不散、精準打擊。";
                 } else if (odds === 3) {
                     score += 10; reason = "陰陽和諧 (TAIJI BALANCE)";
-                    explanation = "<strong>【中庸之道】</strong><br>三奇三偶，乾坤對等。這是最符合自然規律的佈局，能經受時空波動考驗。";
+                    explanation = "<strong>【中庸之道】</strong><br>三奇三偶，乾坤對等。這是最符合自然規律的佈局。";
                 } else if (nums.some((n, i) => i < nums.length - 1 && nums[i+1] - n === 1)) {
                     score += 9; reason = "龍脈相連 (DRAGON VEIN)";
-                    explanation = "<strong>【氣脈相通】</strong><br>偵測到連號結構。這如同數位世界中的龍脈，財源不絕，是提振獲取機率的經典訊號。";
+                    explanation = "<strong>【氣脈相通】</strong><br>偵測到連號結構。這如同數位世界中的龍脈，財源不絕。";
                 } else {
                     reason = "氣場沉穩 (STABLE FOUNDATION)";
-                    explanation = "<strong>【根基穩固】</strong><br>這組號碼佈局平實，象徵「厚德載物」，雖非瞬間爆發之勢，卻能細水長流。";
+                    explanation = "<strong>【根基穩固】</strong><br>這組號碼佈局平實，象徵「厚德載物」，雖非瞬間爆發之勢。";
                 }
             }
             return { score: Math.min(score, 99), reason: reason, explanation: explanation };
