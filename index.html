@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="CaishenNode">
     
-    <title>Caishen Node | Probability Lab</title>
+    <title>Caishen Node | Probability Ritual</title>
     
     <style>
         :root {
@@ -43,7 +43,6 @@
         .mode-btn { flex: 1; padding: 10px; border: none; background: transparent; color: #555; font-weight: 800; font-size: 0.75rem; cursor: pointer; transition: 0.4s; border-radius: 10px; }
         .mode-btn.active { background: var(--imperial-red); color: var(--gold-leaf); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
 
-        /* Ritual Zone */
         .ritual-zone { height: 80px; display: flex; justify-content: center; align-items: center; position: relative; }
         .censer-wrap { position: absolute; bottom: 0; display: flex; flex-direction: column; align-items: center; opacity: 0.2; transition: 0.5s; }
         .app-card.ritual-active .censer-wrap { opacity: 1; }
@@ -59,7 +58,6 @@
         @keyframes toss { 0% { transform: translate(0, 0) rotate(0deg); } 50% { transform: translate(-10px, -40px) rotate(180deg); } 100% { transform: translate(0, 0) rotate(360deg); } }
         .app-card.tossing .block { animation: toss 0.7s ease-out; }
 
-        /* Display Alignment */
         .result-display {
             min-height: 110px; display: grid; grid-template-columns: repeat(3, 1fr); justify-items: center; align-items: center; gap: 12px 8px; margin: 15px auto; max-width: 260px;
         }
@@ -71,18 +69,19 @@
         .ball.special { background: radial-gradient(circle at 30% 30%, #fff 0%, var(--gold-leaf) 100%); color: #430; box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }
         @keyframes ballPop { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-        /* Probability Meter - New Feature */
+        /* Probability Meter UI */
         .prob-meter-wrap { margin-bottom: 25px; padding: 0 20px; opacity: 0; transition: 0.8s; }
         .prob-meter-wrap.show { opacity: 1; }
-        .prob-label { font-size: 0.65rem; color: var(--gold-leaf); letter-spacing: 2px; margin-bottom: 8px; display: flex; justify-content: space-between; }
-        .prob-bar-bg { width: 100%; height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px; overflow: hidden; }
+        .prob-label { font-size: 0.6rem; color: var(--gold-leaf); letter-spacing: 2px; margin-bottom: 8px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        #prob-reason { font-weight: 900; font-size: 0.75rem; letter-spacing: 1px; }
+        .prob-bar-bg { width: 100%; height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px; overflow: hidden; margin-top: 5px; }
         .prob-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--imperial-red), var(--gold-leaf)); transition: width 1.5s cubic-bezier(0.1, 0, 0.2, 1); }
 
         .action-btn { background: linear-gradient(180deg, #900 0%, var(--imperial-red) 100%); color: var(--gold-leaf); border: 1px solid rgba(212, 175, 55, 0.3); width: 100%; padding: 18px; font-size: 0.95rem; font-weight: 900; border-radius: 18px; cursor: pointer; text-transform: uppercase; letter-spacing: 5px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); transition: 0.3s; }
         .action-btn:disabled { opacity: 0.5; }
         .action-btn:active { transform: scale(0.97); }
 
-        .footer-note { margin-top: 20px; font-size: 0.5rem; color: rgba(212, 175, 55, 0.15); letter-spacing: 2px; }
+        .footer-note { margin-top: 20px; font-size: 0.5rem; color: rgba(212, 175, 55, 0.15); letter-spacing: 2px; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -96,7 +95,7 @@
     <div class="app-card" id="app-card">
         <header>
             <h1>CAISHEN NODE</h1>
-            <p>Predictive Ritual Protocol v4.0</p>
+            <p>Predictive Ritual Protocol v4.1</p>
         </header>
         
         <div class="mode-selector">
@@ -113,15 +112,15 @@
 
         <div class="prob-meter-wrap" id="prob-wrap">
             <div class="prob-label">
-                <span>DIVINE PROBABILITY</span>
-                <span id="prob-value">0%</span>
+                <span id="prob-reason">ANALYZING AURA...</span>
+                <span id="prob-value" style="opacity: 0.6;">0%</span>
             </div>
             <div class="prob-bar-bg"><div class="prob-bar-fill" id="prob-fill"></div></div>
         </div>
 
         <button class="action-btn" id="main-btn" onclick="performRitual()">Invoke Divine</button>
         
-        <div class="footer-note">Divine Algorithm Secured • Real-time Sync</div>
+        <div class="footer-note">Divine Algorithm Secured • Ritual Sync Active</div>
     </div>
 
     <script>
@@ -148,6 +147,7 @@
             const probWrap = document.getElementById('prob-wrap');
             const probFill = document.getElementById('prob-fill');
             const probVal = document.getElementById('prob-value');
+            const probReason = document.getElementById('prob-reason');
 
             display.innerHTML = '';
             probWrap.classList.remove('show');
@@ -155,23 +155,23 @@
             resetRitual();
             btn.disabled = true;
             
-            // Phase 1: Incense & Blocks
+            // Phase 1: Ritual Start
             document.getElementById('app-card').classList.add('ritual-active');
             if (window.navigator.vibrate) window.navigator.vibrate(50);
             await new Promise(r => setTimeout(r, 700));
 
-            // Phase 2: Tossing
+            // Phase 2: Tossing Bwa-bwei
             document.getElementById('app-card').classList.add('tossing');
             if (window.navigator.vibrate) window.navigator.vibrate([30, 80, 30, 80]);
             await new Promise(r => setTimeout(r, 700));
 
-            // Phase 3: Land
+            // Phase 3: Divine Result
             document.getElementById('app-card').classList.remove('tossing');
             document.getElementById('block-1').classList.add('flat-up');
             if (window.navigator.vibrate) window.navigator.vibrate([200, 100, 200]);
             await new Promise(r => setTimeout(r, 500));
 
-            // Phase 4: Draw Numbers & Calc Score
+            // Phase 4: Generate Numbers
             let finalNumbers = [];
             if (mode === 'lotto') {
                 finalNumbers = pick(49, 6);
@@ -183,35 +183,50 @@
                 setTimeout(() => addBall(spec, true), 700);
             }
 
-            // Phase 5: Reveal Probability
+            // Phase 5: Probability Algorithm
             setTimeout(() => {
-                const score = calculateScore(finalNumbers);
+                const result = calculateOracle(finalNumbers);
                 probWrap.classList.add('show');
-                probFill.style.width = score + '%';
-                animateValue(probVal, 0, score, 1500);
-            }, 800);
+                probReason.innerText = result.reason;
+                probFill.style.width = result.score + '%';
+                animateValue(probVal, 0, result.score, 1500);
+            }, 900);
 
-            setTimeout(() => { btn.disabled = false; }, 2000);
+            setTimeout(() => { btn.disabled = false; }, 2200);
         }
 
-        // --- Caishen Algorithm Logic ---
-        function calculateScore(nums) {
-            // Base score: 60-85% (Everyone deserves a chance!)
-            let score = Math.floor(Math.random() * 25) + 60;
-            
-            // Logic 1: Check for Consecutive Numbers (玄學：連號財氣旺)
+        function calculateOracle(nums) {
+            let score = Math.floor(Math.random() * 20) + 68; // Base 68-88
+            let reason = "AURA STABLE (氣場平穩)";
+
+            // 1. Yin-Yang (Odd/Even Balance)
+            const odds = nums.filter(n => n % 2 !== 0).length;
+            if (odds >= 2 && odds <= 4) {
+                score += 6;
+                reason = "YIN-YANG BALANCE (陰陽調和)";
+            }
+
+            // 2. Continuous Flow (Consecutive)
             let hasConsecutive = false;
             for(let i=0; i<nums.length-1; i++) {
                 if(nums[i+1] - nums[i] === 1) hasConsecutive = true;
             }
-            if(hasConsecutive) score += 5;
+            if(hasConsecutive) {
+                score += 7;
+                reason = "CONTINUOUS FORTUNE (財氣連綿)";
+            }
 
-            // Logic 2: Balance check (Odd/Even)
-            const odds = nums.filter(n => n % 2 !== 0).length;
-            if(odds >= 2 && odds <= 4) score += 5;
+            // 3. Cluster Luck (Spread)
+            const spread = nums[nums.length-1] - nums[0];
+            if (spread > 30) {
+                score += 5;
+                reason = "GREAT EXPANSION (四方聚財)";
+            }
 
-            // Cap it at 99% (To avoid over-promising!)
-            return Math.min(score, 99);
+            const finalScore = Math.min(score, 99);
+            if (finalScore > 92) reason = "DIVINE ALIGNMENT (天命所歸)";
+            
+            return { score: finalScore, reason: reason };
         }
 
         function animateValue(obj, start, end, duration) {
