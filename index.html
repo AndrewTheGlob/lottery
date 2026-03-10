@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Caishen Node v7.0 | 數位祭壇重啟</title>
+    <title>Caishen Node v7.1 | 數位祭壇完全體</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
@@ -14,95 +14,116 @@
         }
 
         body {
-            font-family: 'PingFang TC', sans-serif;
+            font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
             background: radial-gradient(circle at center, #1a0000 0%, #050505 100%);
             margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden;
         }
 
-        /* 恢復煙霧動畫 */
+        /* 煙霧動畫 */
         .smoke-wrap { position: fixed; width: 100%; height: 100%; z-index: -1; }
         .smoke-particle { position: absolute; width: 300px; height: 300px; background: radial-gradient(circle, var(--smoke) 0%, transparent 70%); bottom: -150px; border-radius: 50%; animation: rise 12s infinite linear; opacity: 0; }
         @keyframes rise { 0% { transform: translateY(0) scale(1); opacity: 0; } 10% { opacity: 1; } 100% { transform: translateY(-120vh) scale(1.8); opacity: 0; } }
 
         .app-card {
-            background: rgba(20, 20, 20, 0.8);
+            background: rgba(20, 20, 20, 0.85);
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
             border: 1px solid rgba(212, 175, 55, 0.3);
             border-radius: 40px;
-            width: 90%; max-width: 380px; padding: 40px 20px; text-align: center;
+            width: 90%; max-width: 380px; padding: 35px 20px; text-align: center;
             box-shadow: 0 40px 100px rgba(0,0,0,0.9);
             position: relative; overflow: hidden;
         }
 
-        header h1 { font-size: 1.8rem; font-weight: 900; letter-spacing: 6px; margin: 0; background: linear-gradient(180deg, #fff, var(--gold-leaf)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        header p { font-size: 0.65rem; color: var(--gold-leaf); opacity: 0.5; margin: 8px 0 25px; letter-spacing: 2px; }
+        header h1 { font-size: 1.6rem; font-weight: 900; letter-spacing: 5px; margin: 0; background: linear-gradient(180deg, #fff, var(--gold-leaf)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        header p { font-size: 0.6rem; color: var(--gold-leaf); opacity: 0.5; margin: 5px 0 20px; letter-spacing: 2px; text-transform: uppercase; }
 
-        /* 數字球 - 恢復質感 */
+        /* 模式切換 */
+        .mode-selector { display: flex; background: rgba(0, 0, 0, 0.5); border-radius: 15px; padding: 5px; margin-bottom: 20px; border: 1px solid rgba(212, 175, 55, 0.1); gap: 5px; }
+        .mode-btn { flex: 1; padding: 10px; border: none; background: transparent; color: #555; font-weight: 800; font-size: 0.75rem; cursor: pointer; border-radius: 10px; transition: 0.3s; }
+        .mode-btn.active { background: var(--imperial-red); color: var(--gold-leaf); }
+
+        /* 數字球 - 確保文字置中 */
         .result-display {
-            min-height: 120px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 25px 0;
+            min-height: 120px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 20px 0; justify-items: center;
         }
+        .result-display.super-mode { grid-template-columns: repeat(4, 1fr); }
+        
         .ball {
-            width: 48px; height: 48px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            width: 48px; height: 48px; border-radius: 50%; 
+            display: flex; justify-content: center; align-items: center; /* 核心置中語法 */
+            line-height: 1; /* 消除行高干擾 */
             font-size: 1.3rem; font-weight: 800; color: #600;
             background: radial-gradient(circle at 30% 30%, #ffffff 0%, #d1d1d1 100%);
             box-shadow: inset -3px -3px 8px rgba(0,0,0,0.2), 0 8px 15px rgba(0,0,0,0.5);
             animation: ballIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
-            position: relative;
         }
         .ball.special { background: radial-gradient(circle at 30% 30%, #fff 0%, var(--gold-leaf) 100%); color: #430; }
-        @keyframes ballIn { 0% { transform: scale(0) rotate(-180deg); opacity: 0; } 100% { transform: scale(1) rotate(0); opacity: 1; } }
+        @keyframes ballIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-        .oracle-info { opacity: 0; transform: translateY(10px); transition: 0.8s; }
-        .oracle-info.show { opacity: 1; transform: translateY(0); }
-        .oracle-tag { font-size: 0.9rem; font-weight: bold; color: #fff; text-shadow: 0 0 10px var(--gold-leaf); }
-        
-        /* 按鈕設計 */
+        /* 解籤區塊 - 預設摺疊 */
+        .oracle-info { max-height: 0; opacity: 0; overflow: hidden; transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .oracle-info.show { max-height: 250px; opacity: 1; margin-top: 15px; }
+        .oracle-tag { font-size: 0.85rem; font-weight: bold; color: #fff; text-shadow: 0 0 10px var(--gold-leaf); }
+        .oracle-desc { font-size: 0.72rem; color: #aaa; line-height: 1.6; margin: 10px 0; text-align: left; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 15px; }
+
         .btn-main {
             background: linear-gradient(180deg, #b00, var(--imperial-red));
             color: var(--gold-leaf); border: 1px solid rgba(212,175,55,0.4);
-            width: 100%; padding: 20px; border-radius: 20px; font-weight: 900; letter-spacing: 4px;
-            cursor: pointer; margin-top: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.4); transition: 0.3s;
+            width: 100%; padding: 18px; border-radius: 18px; font-weight: 900; letter-spacing: 4px;
+            cursor: pointer; margin-top: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.4); transition: 0.3s;
         }
         .btn-main:active { transform: scale(0.96); }
+        .btn-snap { background: transparent; color: rgba(212,175,55,0.3); border: none; margin-top: 15px; font-size: 0.65rem; cursor: pointer; letter-spacing: 2px; }
 
-        .btn-snap {
-            background: transparent; color: rgba(212,175,55,0.4); border: none;
-            margin-top: 15px; font-size: 0.7rem; cursor: pointer; letter-spacing: 2px;
-        }
-
-        /* 隱藏的 Canvas 渲染輔助 */
-        .capture-overlay { position: fixed; top: -9999px; left: -9999px; }
+        /* 截圖模式隱藏 */
+        .screenshotting .no-capture { display: none !important; }
     </style>
 </head>
 <body>
 
     <div class="smoke-wrap">
-        <div class="smoke-particle" style="left: 10%;"></div>
-        <div class="smoke-particle" style="left: 50%; animation-delay: -4s;"></div>
-        <div class="smoke-particle" style="left: 80%; animation-delay: -8s;"></div>
+        <div class="smoke-particle" style="left: 15%;"></div>
+        <div class="smoke-particle" style="left: 55%; animation-delay: -4s;"></div>
+        <div class="smoke-particle" style="left: 85%; animation-delay: -8s;"></div>
     </div>
 
     <div class="app-card" id="ritual-card">
         <header>
             <h1>CAISHEN NODE</h1>
-            <p>Predictive Ritual Protocol v7.0</p>
+            <p>Predictive Ritual Protocol v7.1</p>
         </header>
+
+        <div class="mode-selector no-capture">
+            <button class="mode-btn active" id="mode-lotto" onclick="setMode('lotto')">大樂透</button>
+            <button class="mode-btn" id="mode-super" onclick="setMode('super')">威力彩</button>
+        </div>
 
         <div class="result-display" id="display"></div>
 
         <div class="oracle-info" id="oracle">
-            <div class="oracle-tag" id="status">正在感應天機...</div>
-            <p style="font-size: 0.75rem; color: #aaa; line-height: 1.6; margin: 10px 0;" id="desc"></p>
+            <div class="oracle-tag" id="status">【紫氣東來】</div>
+            <div class="oracle-desc" id="desc"></div>
         </div>
 
-        <button class="btn-main" id="summon-btn" onclick="summon()">召喚財富</button>
-        <button class="btn-snap" id="snap-btn" onclick="takeSnap()">CAPTURE ORACLE (擷取神諭)</button>
+        <button class="btn-main no-capture" id="summon-btn" onclick="summon()">召喚財富</button>
+        <button class="btn-snap no-capture" id="snap-btn" onclick="takeSnap()">CAPTURE ORACLE (擷取神諭)</button>
         
-        <div style="margin-top: 25px; font-size: 0.5rem; color: rgba(212,175,55,0.2); letter-spacing: 3px;">DIVINE ALGORITHM SECURED</div>
+        <div style="margin-top: 20px; font-size: 0.5rem; color: rgba(212,175,55,0.15); letter-spacing: 3px;">DIVINE ALGORITHM SECURED</div>
     </div>
 
     <script>
+        let currentMode = 'lotto';
+
+        function setMode(m) {
+            currentMode = m;
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`mode-${m}`).classList.add('active');
+            document.getElementById('display').innerHTML = '';
+            document.getElementById('display').className = 'result-display' + (m === 'super' ? ' super-mode' : '');
+            document.getElementById('oracle').classList.remove('show');
+        }
+
         function summon() {
             const display = document.getElementById('display');
             const oracle = document.getElementById('oracle');
@@ -112,71 +133,78 @@
             oracle.classList.remove('show');
             btn.disabled = true;
 
-            // 震動回饋
-            if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
+            if (navigator.vibrate) navigator.vibrate(50);
 
-            let pool = Array.from({length: 49}, (_, i) => i + 1);
             let nums = [];
+            let pool = Array.from({length: (currentMode === 'lotto' ? 49 : 38)}, (_, i) => i + 1);
             for(let i=0; i<6; i++) nums.push(pool.splice(Math.floor(Math.random()*pool.length), 1)[0]);
             nums.sort((a,b)=>a-b);
 
+            // 渲染球
             nums.forEach((n, i) => {
                 setTimeout(() => {
                     const b = document.createElement('div');
                     b.className = 'ball';
                     b.innerText = n.toString().padStart(2, '0');
                     display.appendChild(b);
-                }, i * 150);
+                }, i * 120);
             });
 
+            // 威力彩特別號
+            if (currentMode === 'super') {
+                setTimeout(() => {
+                    const sb = document.createElement('div');
+                    sb.className = 'ball special';
+                    sb.innerText = (Math.floor(Math.random()*8)+1).toString().padStart(2, '0');
+                    display.appendChild(sb);
+                }, 800);
+            }
+
+            // 延遲展示解籤
             setTimeout(() => {
                 oracle.classList.add('show');
-                document.getElementById('status').innerText = "【天命所歸】機率共振 94%";
-                document.getElementById('desc').innerText = "此數組與數位星盤完美契合，磁場穩定且具有極強的穿透力，實屬上乘之選。";
+                const lucks = ["天命所歸", "紫氣東來", "金玉滿堂", "龍脈相連"];
+                const descs = [
+                    "此數組與數位星盤產生強烈共鳴，磁場穩定且具有極強的穿透力，實屬上乘之選。",
+                    "檢測到財帛位有明顯波動，此數字排列隱含乾坤定數，建議心誠則靈。",
+                    "五行水火既濟，此佈局符合當前時空節點的財富路徑，建議善加利用。",
+                    "連珠炮發之勢，號碼間存在隱性關聯，象徵財源滾滾，連綿不絕。"
+                ];
+                const idx = Math.floor(Math.random()*lucks.length);
+                document.getElementById('status').innerText = `【${lucks[idx]}】機率共振 ${Math.floor(Math.random()*20+80)}%`;
+                document.getElementById('desc').innerText = descs[idx];
                 btn.disabled = false;
-            }, 1200);
+            }, 1000);
         }
 
         async function takeSnap() {
             const card = document.getElementById('ritual-card');
-            const btn1 = document.getElementById('summon-btn');
-            const btn2 = document.getElementById('snap-btn');
+            card.classList.add('screenshotting');
 
-            // 1. 準備截圖快照狀態
-            btn1.style.opacity = '0';
-            btn2.style.opacity = '0';
-
-            // 2. 核心修正：使用 onclone 在虛擬 DOM 中移除動畫，確保球體已經「落地」
             try {
                 const canvas = await html2canvas(card, {
                     backgroundColor: '#050505',
                     scale: 3,
                     useCORS: true,
-                    allowTaint: true,
                     onclone: (clonedDoc) => {
-                        // 在截圖用的副本中，移除所有動畫與不必要的 UI
-                        const clonedCard = clonedDoc.getElementById('ritual-card');
-                        clonedCard.style.background = '#0f0f0f'; // 強化背景色
-                        clonedCard.style.backdropFilter = 'none';
-                        
+                        clonedDoc.getElementById('oracle').style.maxHeight = 'none';
+                        clonedDoc.getElementById('oracle').style.opacity = '1';
                         const balls = clonedDoc.querySelectorAll('.ball');
                         balls.forEach(b => {
-                            b.style.animation = 'none'; // 停止動畫
-                            b.style.opacity = '1';      // 強制顯示
-                            b.style.transform = 'scale(1)'; 
+                            b.style.animation = 'none';
+                            b.style.opacity = '1';
                         });
                     }
                 });
 
                 const link = document.createElement('a');
                 link.download = `Caishen_Oracle_${Date.now()}.png`;
-                link.href = canvas.toDataURL('image/png', 1.0);
+                link.href = canvas.toDataURL('image/png');
                 link.click();
             } catch (e) {
-                alert("擷取失敗，請稍後再試");
+                alert("擷取失敗");
             } finally {
-                btn1.style.opacity = '1';
-                btn2.style.opacity = '1';
+                card.classList.remove('screenshotting');
             }
         }
     </script>
