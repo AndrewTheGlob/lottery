@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="財神節點">
     
-    <title>Caishen Node | 財神數位祭壇</title>
+    <title>Caishen Node | 財神數位祭壇 v6.0</title>
     
     <style>
         :root {
@@ -82,8 +82,8 @@
         .details-content { 
             max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; background: rgba(0,0,0,0.4); border-radius: 12px; margin-top: 10px;
         }
-        .details-content.open { max-height: 250px; padding: 15px; border: 1px solid rgba(255,255,255,0.05); }
-        .details-text { font-size: 0.7rem; color: #ccc; text-align: left; line-height: 1.6; margin: 0; }
+        .details-content.open { max-height: 300px; padding: 15px; border: 1px solid rgba(255,255,255,0.05); }
+        .details-text { font-size: 0.72rem; color: #ccc; text-align: left; line-height: 1.7; margin: 0; }
 
         .action-btn { background: linear-gradient(180deg, #900 0%, var(--imperial-red) 100%); color: var(--gold-leaf); border: 1px solid rgba(212, 175, 55, 0.3); width: 100%; padding: 18px; font-size: 0.95rem; font-weight: 900; border-radius: 18px; cursor: pointer; text-transform: uppercase; letter-spacing: 5px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
         .action-btn:disabled { opacity: 0.5; }
@@ -102,7 +102,7 @@
     <div class="app-card" id="app-card">
         <header>
             <h1>CAISHEN NODE</h1>
-            <p>Predictive Ritual Protocol v5.2</p>
+            <p>Predictive Ritual Protocol v6.0</p>
         </header>
         
         <div class="mode-selector">
@@ -124,10 +124,10 @@
             </div>
             <div class="prob-bar-bg"><div class="prob-bar-fill" id="prob-fill"></div></div>
             
-            <button class="details-toggle" onclick="toggleDetails()">查看機率解釋</button>
+            <button class="details-toggle" onclick="toggleDetails()">查看財神解籤</button>
             <div class="details-content" id="details-box">
                 <p class="details-text" id="details-explanation">
-                    正在分析數字間的能量分布...
+                    正在從數位虛空提取能量特徵...
                 </p>
             </div>
         </div>
@@ -205,7 +205,7 @@
                 const result = calculateOracle(finalNumbers);
                 probWrap.classList.add('show');
                 probReason.innerText = result.reason;
-                detailsTxt.innerText = result.explanation;
+                detailsTxt.innerHTML = result.explanation;
                 probFill.style.width = result.score + '%';
                 animateValue(probVal, 0, result.score, 1500);
             }, 900);
@@ -214,37 +214,57 @@
         }
 
         function calculateOracle(nums) {
-            // 決定機率分佈
             const roll = Math.random();
+            const sum = nums.reduce((a, b) => a + b, 0);
+            const spread = nums[nums.length-1] - nums[0];
+            const odds = nums.filter(n => n % 2 !== 0).length;
+            
             let score, reason, explanation;
 
-            if (roll > 0.95) { 
-                // 5% 機率觸發「天命大吉」 (90% - 99%)
-                score = Math.floor(Math.random() * 10) + 90;
+            // 1. 極低機率：天命大吉 (90% - 99%)
+            if (roll > 0.97) { 
+                score = Math.floor(Math.random() * 9) + 90;
                 reason = "天命所歸 (DIVINE ALIGNMENT)";
-                explanation = "此組號碼與當前時空節點產生極強共振。在玄學邏輯中，這象徵乾坤定數已現，磁場極其純淨，是罕見的千祥雲集之兆。";
-            } else {
-                // 95% 機率正常分佈 (10% - 48%)
-                score = Math.floor(Math.random() * 30) + 10;
-                reason = "氣場平穩 (AURA STABLE)";
-                explanation = "數字分布符合自然律動。目前雖未見極端共鳴，但穩健的佈局往往是長期運勢累積的基石，建議抱持平常心看待。";
-
-                // 檢查特徵加分
-                const odds = nums.filter(n => n % 2 !== 0).length;
-                if (odds >= 2 && odds <= 4) {
-                    score += 8;
-                    reason = "陰陽調和 (YIN-YANG BALANCE)";
-                    explanation = "此組號碼奇偶分佈均衡，在河圖洛書的數理邏輯中，這代表陰陽互動良好，能形成穩定的財氣迴路，中獎機率因此提升。";
-                }
-
-                let hasConsecutive = false;
-                for(let i=0; i<nums.length-1; i++) {
-                    if(nums[i+1] - nums[i] === 1) hasConsecutive = true;
-                }
-                if(hasConsecutive) {
+                explanation = "<strong>【天命大吉】</strong><br>此組號碼與當前時空節點產生絕對共振。在數位虛空中，這象徵乾坤定數已現。這不是機率的結果，而是能量匯聚的終點。";
+            } 
+            // 2. 較低機率：大吉之兆 (70% - 89%)
+            else if (roll > 0.85) {
+                score = Math.floor(Math.random() * 19) + 70;
+                reason = "紫氣東來 (AUSPICIOUS RADIANCE)";
+                explanation = "<strong>【大吉之兆】</strong><br>數字跨度與當前磁場高度吻合。數理中隱含「水火既濟」之勢，預示著強大的財富吸引力，是極為優秀的選擇。";
+            }
+            // 3. 正常機率：根據數字特徵給出解釋 (10% - 69%)
+            else {
+                score = Math.floor(Math.random() * 30) + 15;
+                
+                // 檢查不同的玄學維度
+                if (sum > 180) {
+                    score += 15;
+                    reason = "九五至尊 (SUPREME PEAK)";
+                    explanation = "<strong>【重數之美】</strong><br>號碼總和偏高，象徵陽氣旺盛，具有壓制貧瘠、匯聚財源的氣勢。在數理分析中，這是一種極具進攻性的財氣佈局。";
+                } else if (spread < 20) {
+                    score += 12;
+                    reason = "聚寶盆效應 (CLUSTER LUCK)";
+                    explanation = "<strong>【能量匯聚】</strong><br>號碼分布極度集中。這在演算法中稱為「聚點效應」，象徵財富不散、精準打擊，能在特定維度爆發出驚人的共鳴。";
+                } else if (odds === 3) {
                     score += 10;
-                    reason = "財氣連綿 (CONTINUOUS FORTUNE)";
-                    explanation = "偵測到連號結構，這在數位演算法中被視為「能量連續體」。象徵富貴氣脈相連，能引發連鎖反應，是中大獎號碼常見的特徵。";
+                    reason = "陰陽和諧 (TAIJI BALANCE)";
+                    explanation = "<strong>【中庸之道】</strong><br>三奇三偶，乾坤對等。這是最符合自然規律的佈局，雖然看似平凡，但在機率統計中，這是最能經受時空波動考驗的結構。";
+                } else if (nums[0] < 5) {
+                    score += 8;
+                    reason = "萬象更新 (FRESH ORIGIN)";
+                    explanation = "<strong>【起點之力】</strong><br>首數極小，象徵一元復始。這組號碼從根基處便帶有強大的生機，能從數位荒野中開闢出財富路徑。";
+                } else if (sum % 10 === 0) {
+                    score += 14;
+                    reason = "圓滿歸一 (TOTALITY ONE)";
+                    explanation = "<strong>【圓滿之數】</strong><br>總合尾數為零，在術數中代表「圓滿」。象徵無缺、無漏，能完整接引財神節點的能量分發，不流失任何福報。";
+                } else if (nums.some((n, i) => i < nums.length - 1 && nums[i+1] - n === 1)) {
+                    score += 9;
+                    reason = "龍脈相連 (DRAGON VEIN)";
+                    explanation = "<strong>【氣脈相通】</strong><br>偵測到連號結構。這如同數位世界中的龍脈，氣息不斷、財源不絕，是大幅度提振獲取機率的經典訊號。";
+                } else {
+                    reason = "氣場沉穩 (STABLE FOUNDATION)";
+                    explanation = "<strong>【根基穩固】</strong><br>這組號碼佈局平實，沒有極端的起伏。在玄學中這代表「厚德載物」，雖非瞬間爆發之勢，卻是能細水長流、靜待時機的佈局。";
                 }
             }
 
