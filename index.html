@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="財神節點">
     
-    <title>Caishen Node | 財神數位祭壇 v6.6</title>
+    <title>Caishen Node | 財神數位祭壇 v6.7</title>
     
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     
@@ -30,20 +30,18 @@
         @keyframes rise { 0% { transform: translateY(0) scale(1); opacity: 0; } 10% { opacity: 1; } 100% { transform: translateY(-120vh) scale(1.8); opacity: 0; } }
 
         .app-card {
-            background: rgba(15, 15, 15, 0.95);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
+            background: #0f0f0f; /* 截圖時使用純色背景避免透明度問題 */
             border: 1px solid rgba(212, 175, 55, 0.25);
             border-radius: 35px;
             width: 90%; max-width: 380px; padding: 35px 15px; text-align: center; box-shadow: 0 40px 80px rgba(0,0,0,0.8); position: relative; box-sizing: border-box; margin: 20px 0;
         }
 
-        header h1 { font-size: 1.6rem; font-weight: 900; letter-spacing: 5px; margin: 0; background: linear-gradient(180deg, #fff, var(--gold-leaf)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        header h1 { font-size: 1.6rem; font-weight: 900; letter-spacing: 5px; margin: 0; background: linear-gradient(180deg, #fff, var(--gold-leaf)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; color: #fff; }
         header p { font-size: 0.6rem; color: var(--gold-leaf); opacity: 0.4; margin-top: 5px; margin-bottom: 20px; letter-spacing: 2px; }
 
         .mode-selector { display: flex; background: rgba(0, 0, 0, 0.5); border-radius: 15px; padding: 6px; margin-bottom: 20px; border: 1px solid rgba(212, 175, 55, 0.1); gap: 10px; }
-        .mode-btn { flex: 1; padding: 10px; border: none; background: transparent; color: #555; font-weight: 800; font-size: 0.75rem; cursor: pointer; transition: 0.4s; border-radius: 10px; }
-        .mode-btn.active { background: var(--imperial-red); color: var(--gold-leaf); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .mode-btn { flex: 1; padding: 10px; border: none; background: transparent; color: #555; font-weight: 800; font-size: 0.75rem; cursor: pointer; border-radius: 10px; }
+        .mode-btn.active { background: var(--imperial-red); color: var(--gold-leaf); }
 
         .ritual-zone { height: 80px; display: flex; justify-content: center; align-items: center; position: relative; }
         .censer-wrap { position: absolute; bottom: 0; display: flex; flex-direction: column; align-items: center; opacity: 0.2; transition: 0.5s; }
@@ -57,7 +55,12 @@
         .app-card.ritual-active .blocks-wrap { opacity: 1; transform: translateY(0); }
         .block { width: 30px; height: 50px; background: var(--vivid-red); border-radius: 50% 10% 10% 50% / 50% 10% 10% 50%; box-shadow: 0 5px 10px rgba(0,0,0,0.5); }
         .block-1.flat-up { background: #eee; border: 1.5px solid #ccc; transform: rotateY(180deg); }
-        @keyframes toss { 0% { transform: translate(0, 0) rotate(0deg); } 50% { transform: translate(-10px, -40px) rotate(180deg); } 100% { transform: translate(0, 0) rotate(360deg); } }
+        
+        @keyframes toss { 
+            0% { transform: translate(0, 0) rotate(0deg); } 
+            50% { transform: translate(-10px, -40px) rotate(180deg); } 
+            100% { transform: translate(0, 0) rotate(360deg); } 
+        }
         .app-card.tossing .block { animation: toss 0.7s ease-out; }
 
         .result-display {
@@ -66,33 +69,31 @@
         .result-display.weili-mode { grid-template-columns: repeat(4, 1fr); }
 
         .ball {
-            width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.1rem; font-weight: 800; background: radial-gradient(circle at 30% 30%, #fff 0%, #cfcfcf 100%); color: #600; box-shadow: 0 5px 10px rgba(0,0,0,0.5); animation: ballPop 0.5s both;
+            width: 42px; height: 42px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.1rem; font-weight: 800; 
+            background: #fff; color: #600; box-shadow: 0 5px 10px rgba(0,0,0,0.5); 
+            animation: ballPop 0.5s both; position: relative; z-index: 10;
         }
-        .ball.special { background: radial-gradient(circle at 30% 30%, #fff 0%, var(--gold-leaf) 100%); color: #430; box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }
+        .ball.special { background: var(--gold-leaf); color: #430; }
         @keyframes ballPop { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
         .prob-section { margin-bottom: 25px; padding: 0 10px; opacity: 0; transition: 0.8s; }
         .prob-section.show { opacity: 1; }
         .prob-label { font-size: 0.65rem; color: var(--gold-leaf); letter-spacing: 2px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-        #prob-reason { font-weight: 900; font-size: 0.8rem; letter-spacing: 1px; color: #fff; text-shadow: 0 0 10px rgba(212, 175, 55, 0.5); }
-        .prob-bar-bg { width: 100%; height: 3px; background: rgba(255,255,255,0.05); border-radius: 2px; overflow: hidden; margin-top: 10px; }
-        .prob-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #555, var(--gold-leaf)); transition: width 1.5s cubic-bezier(0.1, 0, 0.2, 1); }
+        #prob-reason { font-weight: 900; font-size: 0.85rem; color: #fff; }
+        .prob-bar-bg { width: 100%; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; margin-top: 10px; }
+        .prob-bar-fill { height: 100%; width: 0%; background: var(--gold-leaf); transition: width 1.5s; }
 
         .details-toggle { 
-            margin-top: 12px; font-size: 0.6rem; color: rgba(212, 175, 55, 0.6); text-decoration: none; cursor: pointer; border: none; background: none; letter-spacing: 1px; border: 1px solid rgba(212,175,55,0.2); padding: 4px 12px; border-radius: 20px;
+            margin-top: 12px; font-size: 0.6rem; color: var(--gold-leaf); cursor: pointer; border: 1px solid rgba(212,175,55,0.3); padding: 4px 12px; border-radius: 20px; background: none;
         }
-        .details-content { 
-            max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; background: rgba(0,0,0,0.4); border-radius: 12px; margin-top: 10px;
-        }
-        .details-content.open { max-height: 300px; padding: 15px; border: 1px solid rgba(255,255,255,0.05); }
+        .details-content { max-height: 0; overflow: hidden; transition: 0.4s; background: rgba(0,0,0,0.4); border-radius: 12px; }
+        .details-content.open { max-height: 300px; padding: 15px; margin-top: 10px; }
         .details-text { font-size: 0.72rem; color: #ccc; text-align: left; line-height: 1.7; margin: 0; }
 
-        .action-btn { background: linear-gradient(180deg, #900 0%, var(--imperial-red) 100%); color: var(--gold-leaf); border: 1px solid rgba(212, 175, 55, 0.3); width: 100%; padding: 18px; font-size: 0.95rem; font-weight: 900; border-radius: 18px; cursor: pointer; text-transform: uppercase; letter-spacing: 5px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); margin-bottom: 15px; transition: 0.3s; }
-        .action-btn:active { transform: scale(0.98); }
-        .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .action-btn { background: linear-gradient(180deg, #900 0%, var(--imperial-red) 100%); color: var(--gold-leaf); border: 1px solid rgba(212, 175, 55, 0.3); width: 100%; padding: 18px; font-size: 0.95rem; font-weight: 900; border-radius: 18px; cursor: pointer; letter-spacing: 5px; margin-bottom: 15px; }
+        .action-btn:disabled { opacity: 0.5; }
         
-        .screenshot-btn { background: transparent; color: rgba(212, 175, 55, 0.4); border: 1px solid rgba(212, 175, 55, 0.15); width: 100%; padding: 12px; font-size: 0.7rem; border-radius: 12px; cursor: pointer; letter-spacing: 2px; transition: 0.3s; }
-        .screenshot-btn:hover { color: var(--gold-leaf); border-color: var(--gold-leaf); background: rgba(212, 175, 55, 0.05); }
+        .screenshot-btn { background: transparent; color: rgba(212, 175, 55, 0.4); border: 1px solid rgba(212, 175, 55, 0.15); width: 100%; padding: 12px; font-size: 0.7rem; border-radius: 12px; cursor: pointer; letter-spacing: 2px; }
 
         .footer-note { margin-top: 20px; font-size: 0.5rem; color: rgba(212, 175, 55, 0.15); letter-spacing: 2px; text-transform: uppercase; }
     </style>
@@ -108,10 +109,10 @@
     <div class="app-card" id="app-card">
         <header>
             <h1>CAISHEN NODE</h1>
-            <p>Predictive Ritual Protocol v6.6</p>
+            <p>Predictive Ritual Protocol v6.7</p>
         </header>
         
-        <div class="mode-selector" id="ui-mode-wrap">
+        <div class="mode-selector" id="ui-hide-mode">
             <button class="mode-btn active" id="tab-lotto" onclick="switchMode('lotto')">大樂透</button>
             <button class="mode-btn" id="tab-super" onclick="switchMode('super')">威力彩</button>
         </div>
@@ -130,7 +131,7 @@
             </div>
             <div class="prob-bar-bg"><div class="prob-bar-fill" id="prob-fill"></div></div>
             
-            <button class="details-toggle" id="ui-details-btn" onclick="toggleDetails()">查看財神解籤</button>
+            <button class="details-toggle" id="ui-hide-detail" onclick="toggleDetails()">查看財神解籤</button>
             <div class="details-content" id="details-box">
                 <p class="details-text" id="details-explanation"></p>
             </div>
@@ -169,34 +170,38 @@
             const area = document.getElementById('app-card');
             const btn1 = document.getElementById('main-btn');
             const btn2 = document.getElementById('screenshot-btn');
-            const uiMode = document.getElementById('ui-mode-wrap');
-            const uiDetailBtn = document.getElementById('ui-details-btn');
+            const ui1 = document.getElementById('ui-hide-mode');
+            const ui2 = document.getElementById('ui-hide-detail');
 
-            // 隱藏雜項按鈕
+            // 隱藏不必要的元素
             btn1.style.visibility = 'hidden';
             btn2.style.visibility = 'hidden';
-            uiMode.style.opacity = '0';
-            if(!document.getElementById('details-box').classList.contains('open')) uiDetailBtn.style.opacity = '0';
+            ui1.style.opacity = '0';
+            if(!document.getElementById('details-box').classList.contains('open')) ui2.style.opacity = '0';
+
+            // 等待一小段時間確保渲染引擎準備好
+            await new Promise(r => setTimeout(r, 100));
 
             try {
                 const canvas = await html2canvas(area, {
-                    backgroundColor: '#050505',
-                    scale: 2,
+                    backgroundColor: '#0f0f0f', // 強制指定背景顏色
+                    scale: 3, // 更高的解析度
                     logging: false,
-                    useCORS: true
+                    useCORS: true,
+                    allowTaint: true
                 });
 
                 const link = document.createElement('a');
                 link.download = `Caishen_Oracle_${Date.now()}.png`;
-                link.href = canvas.toDataURL('image/png');
+                link.href = canvas.toDataURL('image/png', 1.0);
                 link.click();
             } catch (err) {
-                alert("擷取失敗，請確認權限");
+                alert("擷取失敗");
             } finally {
                 btn1.style.visibility = 'visible';
                 btn2.style.visibility = 'visible';
-                uiMode.style.opacity = '1';
-                uiDetailBtn.style.opacity = '1';
+                ui1.style.opacity = '1';
+                ui2.style.opacity = '1';
             }
         }
 
@@ -207,35 +212,25 @@
             const probFill = document.getElementById('prob-fill');
             const probVal = document.getElementById('prob-value');
             const probReason = document.getElementById('prob-reason');
-            const detailsBox = document.getElementById('details-box');
             const detailsTxt = document.getElementById('details-explanation');
-            const appCard = document.getElementById('app-card');
 
             display.innerHTML = '';
             probWrap.classList.remove('show');
-            detailsBox.classList.remove('open');
+            document.getElementById('details-box').classList.remove('open');
             probFill.style.width = '0%';
             resetRitual();
-            
             btn.disabled = true;
             
-            // 點香
-            appCard.classList.add('ritual-active');
-            if (window.navigator.vibrate) window.navigator.vibrate(50);
+            document.getElementById('app-card').classList.add('ritual-active');
             await new Promise(r => setTimeout(r, 700));
 
-            // 擲筊
-            appCard.classList.add('tossing');
-            if (window.navigator.vibrate) window.navigator.vibrate([30, 80, 30, 80]);
+            document.getElementById('app-card').classList.add('tossing');
             await new Promise(r => setTimeout(r, 700));
 
-            // 結果
-            appCard.classList.remove('tossing');
+            document.getElementById('app-card').classList.remove('tossing');
             document.getElementById('block-1').classList.add('flat-up');
-            if (window.navigator.vibrate) window.navigator.vibrate([200, 100, 200]);
             await new Promise(r => setTimeout(r, 500));
 
-            // 出號
             let finalNumbers = [];
             if (mode === 'lotto') {
                 finalNumbers = pick(49, 6);
@@ -247,7 +242,6 @@
                 setTimeout(() => addBall(spec, true), 700);
             }
 
-            // 計算分數
             setTimeout(() => {
                 const result = calculateOracle(finalNumbers);
                 probWrap.classList.add('show');
@@ -255,7 +249,7 @@
                 detailsTxt.innerHTML = result.explanation;
                 probFill.style.width = result.score + '%';
                 animateValue(probVal, 0, result.score, 1500);
-                btn.disabled = false; // 恢復按鈕
+                btn.disabled = false;
             }, 900);
         }
 
@@ -290,7 +284,7 @@
                     explanation = "<strong>【氣脈相通】</strong><br>偵測到連號結構。這如同數位世界中的龍脈，財源不絕。";
                 } else {
                     reason = "氣場沉穩 (STABLE FOUNDATION)";
-                    explanation = "<strong>【根基穩固】</strong><br>這組號碼佈局平實，象徵「厚德載物」，雖非瞬間爆發之勢。";
+                    explanation = "<strong>【根基穩固】</strong><br>這組號碼佈局平實，象徵「厚德載物」。";
                 }
             }
             return { score: Math.min(score, 99), reason: reason, explanation: explanation };
