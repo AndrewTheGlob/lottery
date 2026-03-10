@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="CaishenNode">
+    <meta name="apple-mobile-web-app-title" content="財神節點">
     
-    <title>Caishen Node | Advanced Ritual</title>
+    <title>Caishen Node | 財神數位祭壇</title>
     
     <style>
         :root {
@@ -18,7 +18,7 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, sans-serif;
+            font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
             background: radial-gradient(circle at center, #1a0000 0%, #050505 100%);
             margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow-y: auto;
         }
@@ -69,22 +69,21 @@
         .ball.special { background: radial-gradient(circle at 30% 30%, #fff 0%, var(--gold-leaf) 100%); color: #430; box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }
         @keyframes ballPop { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-        /* Probability & Foldable Explanation */
         .prob-section { margin-bottom: 25px; padding: 0 10px; opacity: 0; transition: 0.8s; }
         .prob-section.show { opacity: 1; }
-        .prob-label { font-size: 0.6rem; color: var(--gold-leaf); letter-spacing: 2px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-        #prob-reason { font-weight: 900; font-size: 0.75rem; letter-spacing: 1px; }
+        .prob-label { font-size: 0.65rem; color: var(--gold-leaf); letter-spacing: 2px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        #prob-reason { font-weight: 900; font-size: 0.8rem; letter-spacing: 1px; color: #fff; text-shadow: 0 0 10px rgba(212, 175, 55, 0.5); }
         .prob-bar-bg { width: 100%; height: 3px; background: rgba(255,255,255,0.05); border-radius: 2px; overflow: hidden; margin-top: 10px; }
         .prob-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #555, var(--gold-leaf)); transition: width 1.5s cubic-bezier(0.1, 0, 0.2, 1); }
 
         .details-toggle { 
-            margin-top: 12px; font-size: 0.55rem; color: rgba(212, 175, 55, 0.5); text-decoration: underline; cursor: pointer; border: none; background: none; letter-spacing: 1px;
+            margin-top: 12px; font-size: 0.6rem; color: rgba(212, 175, 55, 0.6); text-decoration: none; cursor: pointer; border: none; background: none; letter-spacing: 1px; border: 1px solid rgba(212,175,55,0.2); padding: 4px 12px; border-radius: 20px;
         }
         .details-content { 
-            max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; background: rgba(0,0,0,0.3); border-radius: 10px; margin-top: 8px;
+            max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; background: rgba(0,0,0,0.4); border-radius: 12px; margin-top: 10px;
         }
-        .details-content.open { max-height: 200px; padding: 12px; }
-        .details-text { font-size: 0.6rem; color: #aaa; text-align: left; line-height: 1.5; margin: 0; }
+        .details-content.open { max-height: 250px; padding: 15px; border: 1px solid rgba(255,255,255,0.05); }
+        .details-text { font-size: 0.7rem; color: #ccc; text-align: left; line-height: 1.6; margin: 0; }
 
         .action-btn { background: linear-gradient(180deg, #900 0%, var(--imperial-red) 100%); color: var(--gold-leaf); border: 1px solid rgba(212, 175, 55, 0.3); width: 100%; padding: 18px; font-size: 0.95rem; font-weight: 900; border-radius: 18px; cursor: pointer; text-transform: uppercase; letter-spacing: 5px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
         .action-btn:disabled { opacity: 0.5; }
@@ -103,12 +102,12 @@
     <div class="app-card" id="app-card">
         <header>
             <h1>CAISHEN NODE</h1>
-            <p>Predictive Ritual Protocol v5.0</p>
+            <p>Predictive Ritual Protocol v5.2</p>
         </header>
         
         <div class="mode-selector">
-            <button class="mode-btn active" id="tab-lotto" onclick="switchMode('lotto')">DALETO</button>
-            <button class="mode-btn" id="tab-super" onclick="switchMode('super')">WEILI</button>
+            <button class="mode-btn active" id="tab-lotto" onclick="switchMode('lotto')">大樂透</button>
+            <button class="mode-btn" id="tab-super" onclick="switchMode('super')">威力彩</button>
         </div>
 
         <div class="ritual-zone">
@@ -120,22 +119,22 @@
 
         <div class="prob-section" id="prob-wrap">
             <div class="prob-label">
-                <span id="prob-reason">ANALYZING AURA...</span>
+                <span id="prob-reason">正在感應財氣...</span>
                 <span id="prob-value" style="opacity: 0.6;">0%</span>
             </div>
             <div class="prob-bar-bg"><div class="prob-bar-fill" id="prob-fill"></div></div>
             
-            <button class="details-toggle" onclick="toggleDetails()">How is this calculated?</button>
+            <button class="details-toggle" onclick="toggleDetails()">查看機率解釋</button>
             <div class="details-content" id="details-box">
                 <p class="details-text" id="details-explanation">
-                    The Oracle evaluates the harmonic distance between numbers, yin-yang balance (odd/even), and temporal alignment with the Divine Node.
+                    正在分析數字間的能量分布...
                 </p>
             </div>
         </div>
 
-        <button class="action-btn" id="main-btn" onclick="performRitual()">Invoke Divine</button>
+        <button class="action-btn" id="main-btn" onclick="performRitual()">召喚財富</button>
         
-        <div class="footer-note">Divine Algorithm Secured • Ritual Sync Active</div>
+        <div class="footer-note">Divine Algorithm Secured • 儀式同步中</div>
     </div>
 
     <script>
@@ -215,38 +214,41 @@
         }
 
         function calculateOracle(nums) {
-            // Updated: Lower base probability for realism (12% - 32%)
-            let score = Math.floor(Math.random() * 20) + 12; 
-            let reason = "AURA NEUTRAL (氣場平緩)";
-            let explanation = "The number distribution is standard. No significant resonance detected in the current temporal node.";
+            // 決定機率分佈
+            const roll = Math.random();
+            let score, reason, explanation;
 
-            // 1. Yin-Yang (Odd/Even Balance)
-            const odds = nums.filter(n => n % 2 !== 0).length;
-            if (odds >= 2 && odds <= 4) {
-                score += 8;
-                reason = "YIN-YANG BALANCE (陰陽調和)";
-                explanation = "A balanced ratio of Odd and Even numbers (3:3 or 4:2) suggests a stable energy flow, increasing structural probability.";
+            if (roll > 0.95) { 
+                // 5% 機率觸發「天命大吉」 (90% - 99%)
+                score = Math.floor(Math.random() * 10) + 90;
+                reason = "天命所歸 (DIVINE ALIGNMENT)";
+                explanation = "此組號碼與當前時空節點產生極強共振。在玄學邏輯中，這象徵乾坤定數已現，磁場極其純淨，是罕見的千祥雲集之兆。";
+            } else {
+                // 95% 機率正常分佈 (10% - 48%)
+                score = Math.floor(Math.random() * 30) + 10;
+                reason = "氣場平穩 (AURA STABLE)";
+                explanation = "數字分布符合自然律動。目前雖未見極端共鳴，但穩健的佈局往往是長期運勢累積的基石，建議抱持平常心看待。";
+
+                // 檢查特徵加分
+                const odds = nums.filter(n => n % 2 !== 0).length;
+                if (odds >= 2 && odds <= 4) {
+                    score += 8;
+                    reason = "陰陽調和 (YIN-YANG BALANCE)";
+                    explanation = "此組號碼奇偶分佈均衡，在河圖洛書的數理邏輯中，這代表陰陽互動良好，能形成穩定的財氣迴路，中獎機率因此提升。";
+                }
+
+                let hasConsecutive = false;
+                for(let i=0; i<nums.length-1; i++) {
+                    if(nums[i+1] - nums[i] === 1) hasConsecutive = true;
+                }
+                if(hasConsecutive) {
+                    score += 10;
+                    reason = "財氣連綿 (CONTINUOUS FORTUNE)";
+                    explanation = "偵測到連號結構，這在數位演算法中被視為「能量連續體」。象徵富貴氣脈相連，能引發連鎖反應，是中大獎號碼常見的特徵。";
+                }
             }
 
-            // 2. Continuous Flow (Consecutive)
-            let hasConsecutive = false;
-            for(let i=0; i<nums.length-1; i++) {
-                if(nums[i+1] - nums[i] === 1) hasConsecutive = true;
-            }
-            if(hasConsecutive) {
-                score += 12;
-                reason = "CONTINUOUS FORTUNE (財氣連綿)";
-                explanation = "Sequential numbers (e.g. 12, 13) create a 'Continuous Pulse' in the algorithm, a pattern often seen in major breakthroughs.";
-            }
-
-            // 3. Low Probability Case (Below 20%)
-            if (score < 20) {
-                reason = "VOID RESONANCE (虛位以待)";
-                explanation = "The current sequence resides in a low-resonance zone. Great fortune often requires patience or a second consultation.";
-            }
-
-            const finalScore = Math.min(score, 65); // Realistic cap at 65%
-            return { score: finalScore, reason: reason, explanation: explanation };
+            return { score: Math.min(score, 99), reason: reason, explanation: explanation };
         }
 
         function animateValue(obj, start, end, duration) {
