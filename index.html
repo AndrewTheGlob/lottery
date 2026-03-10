@@ -2,183 +2,174 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Caishen Node v6.8 | 修正版</title>
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Caishen Node v6.9 | Final Fix</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
-            --imperial-red: #8b0000;
-            --vivid-red: #e60012;
-            --gold-leaf: #d4af37;
+            --gold: #d4af37;
+            --dark-red: #8b0000;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: #050505;
-            margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow-y: auto;
+            background-color: #050505;
+            color: #fff;
+            font-family: sans-serif;
+            display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0;
         }
 
+        /* 截圖範圍核心 */
         .app-card {
-            background: #0f0f0f;
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            border-radius: 35px;
-            width: 90%; max-width: 380px; padding: 35px 20px; text-align: center; box-sizing: border-box; margin: 20px 0;
+            background-color: #111111; /* 使用實色背景 */
+            border: 2px solid var(--gold);
+            border-radius: 30px;
+            width: 350px; padding: 30px 20px;
+            text-align: center;
             position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
-        header h1 { font-size: 1.6rem; margin: 0; color: #fff; letter-spacing: 5px; }
-        header p { font-size: 0.6rem; color: var(--gold-leaf); opacity: 0.6; margin: 8px 0 20px; }
+        header h1 { font-size: 1.5rem; letter-spacing: 5px; margin: 0; color: #fff; }
+        header p { font-size: 0.7rem; color: var(--gold); margin: 5px 0 20px; opacity: 0.8; }
 
-        .mode-selector { display: flex; background: #000; border-radius: 15px; padding: 5px; margin-bottom: 20px; border: 1px solid rgba(212, 175, 55, 0.1); }
-        .mode-btn { flex: 1; padding: 10px; border: none; background: transparent; color: #666; font-weight: bold; font-size: 0.8rem; cursor: pointer; border-radius: 10px; }
-        .mode-btn.active { background: var(--imperial-red); color: var(--gold-leaf); }
-
-        /* 數字球樣式 - 重點修正 */
-        .result-display {
-            min-height: 110px; display: grid; grid-template-columns: repeat(3, 1fr); justify-items: center; align-items: center; gap: 15px; margin: 20px auto;
+        .result-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 15px; margin: 20px 0; min-height: 120px;
         }
-        .result-display.weili-mode { grid-template-columns: repeat(4, 1fr); }
+        .result-grid.super-mode { grid-template-columns: repeat(4, 1fr); }
 
+        /* 數字球 - 確保 html2canvas 能量化的樣式 */
         .ball {
-            width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; 
-            font-size: 1.2rem; font-weight: 900; 
-            background: #ffffff; /* 截圖時穩定 */
-            color: #8b0000 !important; /* 強制顏色 */
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            animation: ballPop 0.4s ease-out both;
+            width: 50px; height: 50px; 
+            background-color: #ffffff !important; /* 截圖時顯示的關鍵 */
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 1.3rem; font-weight: bold;
+            color: #000000 !important; /* 修正顏色確保可見 */
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+            margin: auto;
         }
-        .ball.special { background: #d4af37 !important; color: #331a00 !important; }
+        .ball.special {
+            background-color: var(--gold) !important;
+            color: #fff !important;
+        }
 
-        @keyframes ballPop { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .oracle-section { opacity: 0; transition: 0.5s; margin-top: 15px; }
+        .oracle-section.show { opacity: 1; }
+        .oracle-title { color: var(--gold); font-weight: bold; font-size: 1rem; }
+        .oracle-text { font-size: 0.8rem; color: #ccc; margin-top: 5px; line-height: 1.5; }
 
-        .prob-section { margin-bottom: 25px; opacity: 0; transition: 0.5s; }
-        .prob-section.show { opacity: 1; }
-        .prob-label { font-size: 0.7rem; color: var(--gold-leaf); margin-bottom: 10px; display: block; }
-        #prob-reason { font-size: 0.9rem; font-weight: bold; color: #fff; display: block; }
+        .btn-group { margin-top: 25px; display: flex; flex-direction: column; gap: 10px; }
         
-        .details-content { max-height: 0; overflow: hidden; background: rgba(255,255,255,0.05); border-radius: 15px; transition: 0.4s; }
-        .details-content.open { max-height: 300px; padding: 15px; margin-top: 15px; border: 1px solid rgba(212,175,55,0.1); }
-        .details-text { font-size: 0.75rem; color: #aaa; text-align: left; line-height: 1.6; margin: 0; }
-
-        .action-btn { background: var(--imperial-red); color: var(--gold-leaf); border: 1px solid var(--gold-leaf); width: 100%; padding: 18px; font-size: 1rem; font-weight: 900; border-radius: 20px; cursor: pointer; letter-spacing: 3px; margin-bottom: 15px; }
-        .screenshot-btn { background: transparent; color: #666; border: 1px solid #333; width: 100%; padding: 12px; font-size: 0.7rem; border-radius: 12px; cursor: pointer; }
+        .main-btn {
+            background-color: var(--dark-red);
+            color: var(--gold);
+            border: 1px solid var(--gold);
+            padding: 15px; border-radius: 15px;
+            font-size: 1rem; font-weight: bold; cursor: pointer;
+        }
         
-        /* 截圖時隱藏的 UI */
-        .screenshotting .no-capture { visibility: hidden !important; opacity: 0 !important; }
+        .snap-btn {
+            background: transparent; color: #555; border: 1px solid #333;
+            padding: 10px; border-radius: 10px; font-size: 0.7rem; cursor: pointer;
+        }
+
+        /* 截圖時隱藏 */
+        .capturing .no-print { display: none !important; }
     </style>
 </head>
 <body>
 
-    <div class="app-card" id="main-card">
+    <div class="app-card" id="capture-box">
         <header>
             <h1>CAISHEN NODE</h1>
-            <p>Predictive Ritual Protocol v6.8</p>
+            <p>Predictive Ritual Protocol v6.9</p>
         </header>
-        
-        <div class="mode-selector no-capture">
-            <button class="mode-btn active" id="tab-lotto" onclick="switchMode('lotto')">大樂透</button>
-            <button class="mode-btn" id="tab-super" onclick="switchMode('super')">威力彩</button>
-        </div>
 
-        <div class="result-display" id="display"></div>
-
-        <div class="prob-section" id="prob-wrap">
-            <span class="prob-label">數位卦象鑑定</span>
-            <span id="prob-reason">等待儀式...</span>
-            
-            <div class="details-content" id="details-box">
-                <p class="details-text" id="details-explanation"></p>
+        <div class="result-grid" id="ball-container">
             </div>
+
+        <div class="oracle-section" id="oracle-box">
+            <div class="oracle-title" id="oracle-status">-- 鑑定中 --</div>
+            <div class="oracle-text" id="oracle-desc"></div>
         </div>
 
-        <button class="action-btn no-capture" id="main-btn" onclick="performRitual()">召喚財富</button>
-        <button class="screenshot-btn no-capture" onclick="takeScreenshot()">CAPTURE ORACLE (擷取神諭)</button>
+        <div class="btn-group no-print">
+            <button class="main-btn" onclick="startRitual()">召喚財富</button>
+            <button class="snap-btn" onclick="captureImage()">CAPTURE ORACLE (擷取神諭)</button>
+        </div>
         
-        <div style="margin-top: 15px; font-size: 0.5rem; color: #333;">DIVINE ALGORITHM SECURED</div>
+        <div style="margin-top: 20px; font-size: 0.5rem; color: #222;">ENCRYPTED BY CAISHEN PROTOCOL</div>
     </div>
 
     <script>
-        let mode = 'lotto';
+        let isSuperMode = false; // 預設大樂透，需要的話可以加切換
 
-        function switchMode(m) {
-            mode = m;
-            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(`tab-${m}`).classList.add('active');
-            document.getElementById('display').innerHTML = '';
-            document.getElementById('display').className = 'result-display' + (m === 'super' ? ' weili-mode' : '');
-            document.getElementById('prob-wrap').classList.remove('show');
-        }
+        function startRitual() {
+            const container = document.getElementById('ball-container');
+            const oracle = document.getElementById('oracle-box');
+            container.innerHTML = '';
+            oracle.classList.remove('show');
 
-        async function takeScreenshot() {
-            const card = document.getElementById('main-card');
-            
-            // 進入截圖模式
-            card.classList.add('screenshotting');
-            
-            // 強制等待 UI 更新
-            await new Promise(r => setTimeout(r, 200));
-
-            try {
-                const canvas = await html2canvas(card, {
-                    backgroundColor: '#0f0f0f',
-                    scale: 3,
-                    useCORS: true,
-                    allowTaint: false,
-                    ignoreElements: (el) => el.classList.contains('no-capture')
-                });
-
-                const link = document.createElement('a');
-                link.download = `Caishen_${Date.now()}.png`;
-                link.href = canvas.toDataURL('image/png', 1.0);
-                link.click();
-            } catch (e) {
-                alert("擷取失敗");
-            } finally {
-                card.classList.remove('screenshotting');
-            }
-        }
-
-        async function performRitual() {
-            const display = document.getElementById('display');
-            const btn = document.getElementById('main-btn');
-            const probWrap = document.getElementById('prob-wrap');
-            
-            display.innerHTML = '';
-            probWrap.classList.remove('show');
-            btn.disabled = true;
-
-            // 模擬儀式延遲
-            await new Promise(r => setTimeout(r, 500));
-
+            // 生成號碼
             let nums = [];
-            if (mode === 'lotto') {
-                nums = pick(49, 6);
-                nums.forEach((n, i) => setTimeout(() => addBall(n, false), i * 100));
-            } else {
-                nums = pick(38, 6);
-                nums.forEach((n, i) => setTimeout(() => addBall(n, false), i * 100));
-                setTimeout(() => addBall(Math.floor(Math.random()*8)+1, true), 700);
+            let pool = Array.from({length: 49}, (_, i) => i + 1);
+            for(let i=0; i<6; i++) {
+                let idx = Math.floor(Math.random() * pool.length);
+                nums.push(pool.splice(idx, 1)[0]);
             }
+            nums.sort((a,b) => a-b);
 
+            // 渲染球體
+            nums.forEach((n, i) => {
+                const b = document.createElement('div');
+                b.className = 'ball';
+                b.innerText = n.toString().padStart(2, '0');
+                container.appendChild(b);
+            });
+
+            // 顯示鑑定結果
             setTimeout(() => {
-                probWrap.classList.add('show');
-                document.getElementById('prob-reason').innerText = "【天命所歸】磁場強度 92%";
-                document.getElementById('details-explanation').innerText = "此組號碼與當前時空節點產生絕對共振，數位虛空中乾坤定數已現。";
-                document.getElementById('details-box').classList.add('open');
-                btn.disabled = false;
-            }, 1000);
+                oracle.classList.add('show');
+                document.getElementById('oracle-status').innerText = "【紫氣東來】機率感測 88%";
+                document.getElementById('oracle-desc').innerText = "檢測到強大的數值共振，此佈局符合當前財位。";
+            }, 500);
         }
 
-        function pick(max, count) {
-            let p = Array.from({length: max}, (_, i) => i + 1);
-            return Array.from({length: count}, () => p.splice(Math.floor(Math.random()*p.length), 1)[0]).sort((a,b)=>a-b);
-        }
+        async function captureImage() {
+            const box = document.getElementById('capture-box');
+            
+            // 標記截圖中
+            box.classList.add('capturing');
 
-        function addBall(num, isSpecial) {
-            const b = document.createElement('div');
-            b.className = `ball ${isSpecial ? 'special' : ''}`;
-            b.innerText = num.toString().padStart(2, '0');
-            document.getElementById('display').appendChild(b);
+            // 給予一點點時間讓瀏覽器處理樣式切換
+            await new Promise(r => setTimeout(r, 100));
+
+            html2canvas(box, {
+                backgroundColor: '#050505',
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                // 強制繪製文字
+                onclone: (clonedDoc) => {
+                    // 可以在這裡強制調整複製出的 DOM 樣式，確保萬無一失
+                    const clonedBalls = clonedDoc.querySelectorAll('.ball');
+                    clonedBalls.forEach(b => {
+                        b.style.display = 'flex';
+                        b.style.color = '#000000';
+                        b.style.backgroundColor = '#ffffff';
+                    });
+                }
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `Divine_Oracle_${Date.now()}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                box.classList.remove('capturing');
+            }).catch(err => {
+                alert("擷取失敗");
+                box.classList.remove('capturing');
+            });
         }
     </script>
 </body>
