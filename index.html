@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Caishen Node v7.5 | 財神節點</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <title>Caishen Node | 財神數位祭壇</title>
     <style>
         :root {
             --imperial-red: #8b0000;
@@ -14,100 +13,101 @@
         }
 
         body {
-            font-family: 'PingFang TC', sans-serif;
-            background: #050505;
-            margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden;
+            font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+            background: radial-gradient(circle at center, #1a0000 0%, #050505 100%);
+            margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow-y: auto;
         }
 
-        .smoke-wrap { position: fixed; width: 100%; height: 100%; z-index: -1; }
+        /* 煙霧背景動畫 */
+        .smoke-wrap { position: fixed; width: 100%; height: 100%; z-index: -1; overflow: hidden; }
         .smoke-particle { position: absolute; width: 300px; height: 300px; background: radial-gradient(circle, var(--smoke) 0%, transparent 70%); bottom: -150px; border-radius: 50%; animation: rise 12s infinite linear; opacity: 0; }
         @keyframes rise { 0% { transform: translateY(0) scale(1); opacity: 0; } 10% { opacity: 1; } 100% { transform: translateY(-120vh) scale(1.8); opacity: 0; } }
 
         .app-card {
-            background: rgba(25, 20, 20, 0.9);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            border-radius: 40px; width: 340px; padding: 30px 20px; text-align: center;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.8); position: relative;
+            background: rgba(20, 20, 20, 0.7);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            border-radius: 35px;
+            width: 90%; max-width: 380px; padding: 35px 15px; text-align: center;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.8); position: relative; box-sizing: border-box; margin: 20px 0;
         }
 
-        /* 空間複用區 (模式切換 vs 解籤) */
-        .top-deck { position: relative; height: 50px; margin-bottom: 20px; }
-        .mode-selector { display: flex; background: #000; border-radius: 12px; padding: 4px; border: 1px solid rgba(212, 175, 55, 0.1); gap: 4px; }
-        .mode-btn { flex: 1; padding: 8px; border: none; background: transparent; color: #444; font-weight: 800; font-size: 0.75rem; cursor: pointer; border-radius: 8px; }
+        header h1 { font-size: 1.6rem; font-weight: 900; letter-spacing: 5px; margin: 0; background: linear-gradient(180deg, #fff, var(--gold-leaf)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        header p { font-size: 0.6rem; color: var(--gold-leaf); opacity: 0.4; margin-top: 5px; margin-bottom: 20px; letter-spacing: 2px; }
+
+        .mode-selector { display: flex; background: rgba(0, 0, 0, 0.5); border-radius: 15px; padding: 6px; margin-bottom: 20px; border: 1px solid rgba(212, 175, 55, 0.1); gap: 10px; }
+        .mode-btn { flex: 1; padding: 10px; border: none; background: transparent; color: #555; font-weight: 800; font-size: 0.75rem; cursor: pointer; border-radius: 10px; transition: 0.3s; }
         .mode-btn.active { background: var(--imperial-red); color: var(--gold-leaf); }
 
-        .oracle-layer {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(139, 0, 0, 0.95); border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            opacity: 0; transform: scale(0.9); transition: 0.4s; pointer-events: none; z-index: 10;
-        }
-        .oracle-layer.open { opacity: 1; transform: scale(1); pointer-events: auto; }
-        .oracle-text { color: var(--gold-leaf); font-size: 0.7rem; font-weight: bold; padding: 0 10px; cursor: pointer; }
-
-        /* 擲筊區域 */
-        .ritual-zone { height: 60px; display: flex; justify-content: center; align-items: center; gap: 15px; perspective: 500px; }
+        /* 擲筊動畫區 */
+        .ritual-zone { height: 80px; display: flex; justify-content: center; align-items: center; gap: 15px; perspective: 500px; }
         .block { 
-            width: 30px; height: 45px; background: var(--vivid-red); 
+            width: 35px; height: 55px; background: var(--vivid-red); 
             border-radius: 50% 10% 10% 50% / 50% 10% 10% 50%;
-            box-shadow: inset -2px -2px 5px rgba(0,0,0,0.4), 0 5px 10px rgba(0,0,0,0.5);
+            box-shadow: inset -3px -3px 8px rgba(0,0,0,0.4), 0 8px 15px rgba(0,0,0,0.5);
             display: none;
         }
         .block.show { display: block; }
-        .block.flat { transform: rotateY(180deg); background: #f0f0f0; border: 1px solid #ccc; }
+        .block.flat { transform: rotateY(180deg); background: #eee; border: 1px solid #ccc; }
         
         @keyframes toss {
             0% { transform: translateY(0) rotateX(0) rotateZ(0); }
-            30% { transform: translateY(-50px) rotateX(360deg) rotateZ(180deg); }
-            100% { transform: translateY(0) rotateX(720deg) rotateZ(360deg); }
+            25% { transform: translateY(-60px) rotateX(360deg) rotateZ(90deg); }
+            50% { transform: translateY(0) rotateX(720deg) rotateZ(180deg); }
+            75% { transform: translateY(-20px) rotateX(900deg) rotateZ(270deg); }
+            100% { transform: translateY(0) rotateX(1080deg) rotateZ(360deg); }
         }
-        .tossing { animation: toss 0.6s ease-out; }
+        .tossing { animation: toss 0.7s ease-out; }
 
-        /* 數字展示 */
-        .result-display { min-height: 110px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 15px 0; justify-items: center; }
-        .result-display.super { grid-template-columns: repeat(4, 1fr); }
+        .result-display { min-height: 110px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px 8px; margin: 15px auto; max-width: 260px; justify-items: center; }
+        .result-display.super-mode { grid-template-columns: repeat(4, 1fr); }
+
         .ball {
-            width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
-            font-size: 1.2rem; font-weight: 800; color: #500;
-            background: radial-gradient(circle at 30% 30%, #fff 0%, #ccc 100%);
-            box-shadow: 0 5px 10px rgba(0,0,0,0.4); animation: ballIn 0.4s both;
+            width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            font-size: 1.2rem; font-weight: 800; color: #600;
+            background: radial-gradient(circle at 30% 30%, #ffffff 0%, #d1d1d1 100%);
+            box-shadow: inset -3px -3px 8px rgba(0,0,0,0.2), 0 5px 10px rgba(0,0,0,0.5);
+            animation: ballPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
         }
-        .ball.special { background: radial-gradient(circle at 30% 30%, #fff 0%, var(--gold-leaf) 100%); }
-        @keyframes ballIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .ball.special { background: radial-gradient(circle at 30% 30%, #fff 0%, var(--gold-leaf) 100%); color: #430; }
+        @keyframes ballPop { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-        /* 按鈕區 */
-        .btn-main {
-            background: linear-gradient(180deg, #900, var(--imperial-red));
-            color: var(--gold-leaf); border: 1px solid rgba(212,175,55,0.4);
-            width: 100%; padding: 16px; border-radius: 15px; font-weight: 900; letter-spacing: 4px; cursor: pointer;
-        }
-        .btn-snap {
-            background: rgba(255,255,255,0.05); color: #666; border: 1px solid #333;
-            width: 100%; padding: 10px; border-radius: 12px; font-size: 0.7rem; margin-top: 10px; cursor: pointer;
-        }
+        /* 解籤區 */
+        .oracle-section { margin-top: 20px; opacity: 0; transition: 0.8s; max-height: 0; overflow: hidden; }
+        .oracle-section.show { opacity: 1; max-height: 300px; }
+        .oracle-tag { font-size: 0.9rem; font-weight: bold; color: #fff; text-shadow: 0 0 10px var(--gold-leaf); }
+        .oracle-desc { font-size: 0.75rem; color: #ccc; line-height: 1.6; margin: 10px 0; text-align: left; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 15px; }
 
-        /* 截圖亮度修正樣式 */
-        .screenshotting { background: #1a1a1a !important; backdrop-filter: none !important; }
-        .screenshotting .ball { box-shadow: none !important; border: 1px solid #ddd; }
+        .action-btn {
+            background: linear-gradient(180deg, #900 0%, var(--imperial-red) 100%);
+            color: var(--gold-leaf); border: 1px solid rgba(212, 175, 55, 0.3);
+            width: 100%; padding: 18px; font-size: 1rem; font-weight: 900; border-radius: 18px;
+            cursor: pointer; letter-spacing: 5px; margin-top: 20px; transition: 0.3s;
+        }
+        .action-btn:active { transform: scale(0.96); }
+        .action-btn:disabled { opacity: 0.5; }
+
+        .footer-note { margin-top: 25px; font-size: 0.5rem; color: rgba(212, 175, 55, 0.2); letter-spacing: 3px; }
     </style>
 </head>
 <body>
 
-    <div class="app-card" id="ritual-card">
-        <header>
-            <h1 style="margin:0; font-size:1.4rem; color:var(--gold-leaf)">CAISHEN NODE</h1>
-            <p style="margin:5px 0 15px; font-size:0.5rem; opacity:0.5; letter-spacing:2px">DIVINE ALGORITHM v7.5</p>
-        </header>
+    <div class="smoke-wrap">
+        <div class="smoke-particle" style="left: 10%;"></div>
+        <div class="smoke-particle" style="left: 50%; animation-delay: -4s;"></div>
+        <div class="smoke-particle" style="left: 80%; animation-delay: -8s;"></div>
+    </div>
 
-        <div class="top-deck">
-            <div class="mode-selector" id="mode-ui">
-                <button class="mode-btn active" id="m-lotto" onclick="setMode('lotto')">大樂透</button>
-                <button class="mode-btn" id="m-super" onclick="setMode('super')">威力彩</button>
-            </div>
-            <div class="oracle-layer" id="oracle-ui" onclick="this.classList.remove('open')">
-                <div class="oracle-text" id="oracle-msg"></div>
-            </div>
+    <div class="app-card">
+        <header>
+            <h1>CAISHEN NODE</h1>
+            <p>Predictive Ritual Protocol</p>
+        </header>
+        
+        <div class="mode-selector">
+            <button class="mode-btn active" id="tab-lotto" onclick="switchMode('lotto')">大樂透</button>
+            <button class="mode-btn" id="tab-super" onclick="switchMode('super')">威力彩</button>
         </div>
 
         <div class="ritual-zone">
@@ -117,107 +117,90 @@
 
         <div class="result-display" id="display"></div>
 
-        <div style="margin-top: 20px;">
-            <button class="btn-main" id="btn-sum" onclick="run()">召喚財富</button>
-            <button class="btn-snap" id="btn-cap" onclick="snap()">CAPTURE ORACLE (擷取神諭)</button>
+        <div class="oracle-section" id="oracle">
+            <div class="oracle-tag" id="status">【聖筊】</div>
+            <div class="oracle-desc" id="desc"></div>
         </div>
+
+        <button class="action-btn" id="main-btn" onclick="performRitual()">召喚財富</button>
+        
+        <div class="footer-note">DIVINE ALGORITHM SECURED</div>
     </div>
 
     <script>
         let mode = 'lotto';
         const oracles = [
-            { t: "【天命所歸】機率 96%：乾坤定數已現，此組號碼具備極強穿透力。", p: 96 },
-            { t: "【紫氣東來】機率 88%：財氣由東方匯聚，數理格局呈現大吉之兆。", p: 88 },
-            { t: "【金玉滿堂】機率 75%：五行水火既濟，號碼分佈極為均衡穩重。", p: 75 },
-            { t: "【龍脈相連】機率 62%：連號中隱含龍脈氣息，財源不絕，貴人相助。", p: 62 },
-            { t: "【利涉大川】機率 54%：格局開闊，適合跨度較大的投注策略。", p: 54 },
-            { t: "【守株待兔】機率 45%：氣場沉穩，建議長期持有，靜候數位洪流。", p: 45 },
-            { t: "【潛龍勿用】機率 38%：能量蓄勢待發，當前節點適合小試牛刀。", p: 38 },
-            { t: "【風雲際會】機率 51%：奇偶交替頻繁，象徵變化中隱藏巨大契機。", p: 51 },
-            { t: "【點石成金】機率 42%：冷門號碼中藏有玄機，出奇制勝在此一舉。", p: 42 },
-            { t: "【厚德載物】機率 33%：數值總和偏高，象徵承載力強，根基深厚。", p: 33 }
+            { t: "天命所歸", d: "此數組與數位星盤產生強烈共鳴，磁場穩定且具有極強穿透力，實屬上乘之選。" },
+            { t: "紫氣東來", d: "檢測到財帛位有明顯波動，此數字排列隱含乾坤定數，建議心誠則靈。" },
+            { t: "金玉滿堂", d: "五行水火既濟，此佈局符合當前時空節點的財富路徑，建議善加利用。" },
+            { t: "龍脈相連", d: "連珠炮發之勢，號碼間存在隱性關聯，象徵財源滾滾，連綿不絕。" },
+            { t: "五行和諧", d: "佈局平實穩重，數值跨度適中。雖無瞬間爆發之勢，但根基穩固。" },
+            { t: "利涉大川", d: "格局開闊，適合跨度較大的投注策略。氣勢如虹，勢不可擋。" },
+            { t: "守株待兔", d: "氣場沉穩，建議長期持有，靜候數位洪流的到來。" },
+            { t: "風雲際會", d: "奇偶交替頻繁，象徵變化中隱藏巨大契機。出奇制勝在此一舉。" },
+            { t: "潛龍勿用", d: "氣場處於沉澱期。這組號碼象徵「守」，適合小試牛刀。" }
         ];
 
-        function setMode(m) {
+        function switchMode(m) {
             mode = m;
             document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('m-'+m).classList.add('active');
+            document.getElementById(`tab-${m}`).classList.add('active');
             document.getElementById('display').innerHTML = '';
-            document.getElementById('display').className = 'result-display ' + (m==='super'?'super':'');
+            document.getElementById('display').className = 'result-display' + (m === 'super' ? ' super-mode' : '');
+            document.getElementById('oracle').classList.remove('show');
         }
 
-        async function run() {
-            const b1 = document.getElementById('b1'); const b2 = document.getElementById('b2');
-            const btn = document.getElementById('btn-sum'); const disp = document.getElementById('display');
-            const oUi = document.getElementById('oracle-ui');
-            
-            disp.innerHTML = ''; oUi.classList.remove('open');
+        async function performRitual() {
+            const disp = document.getElementById('display');
+            const btn = document.getElementById('main-btn');
+            const oracle = document.getElementById('oracle');
+            const b1 = document.getElementById('b1');
+            const b2 = document.getElementById('b2');
+
+            disp.innerHTML = '';
+            oracle.classList.remove('show');
             btn.disabled = true;
 
-            // 擲筊儀式
-            b1.className = 'block show tossing'; b2.className = 'block show tossing flat';
-            await new Promise(r => setTimeout(r, 600));
-            b1.classList.remove('tossing'); b2.classList.remove('tossing');
-            
-            // 生成號碼
-            let pool = Array.from({length: mode==='lotto'?49:38}, (_, i) => i + 1);
-            let res = [];
-            for(let i=0; i<6; i++) res.push(pool.splice(Math.floor(Math.random()*pool.length), 1)[0]);
-            res.sort((a,b)=>a-b);
+            // 擲筊動畫
+            b1.className = 'block show tossing';
+            b2.className = 'block show tossing flat';
+            await new Promise(r => setTimeout(r, 700));
+            b1.classList.remove('tossing');
+            b2.classList.remove('tossing');
+            await new Promise(r => setTimeout(r, 400));
 
-            res.forEach((n, i) => {
+            // 生成號碼
+            let pool = Array.from({length: (mode === 'lotto' ? 49 : 38)}, (_, i) => i + 1);
+            let nums = [];
+            for(let i=0; i<6; i++) nums.push(pool.splice(Math.floor(Math.random()*pool.length), 1)[0]);
+            nums.sort((a,b)=>a-b);
+
+            nums.forEach((n, i) => {
                 setTimeout(() => {
                     const b = document.createElement('div');
-                    b.className = 'ball'; b.innerText = n.toString().padStart(2,'0');
+                    b.className = 'ball';
+                    b.innerText = n.toString().padStart(2, '0');
                     disp.appendChild(b);
-                }, i * 100);
+                }, i * 150);
             });
 
-            if(mode === 'super') {
+            if (mode === 'super') {
                 setTimeout(() => {
-                    const b = document.createElement('div');
-                    b.className = 'ball special'; b.innerText = (Math.floor(Math.random()*8)+1).toString().padStart(2,'0');
-                    disp.appendChild(b);
-                }, 700);
+                    const sb = document.createElement('div');
+                    sb.className = 'ball special';
+                    sb.innerText = (Math.floor(Math.random()*8)+1).toString().padStart(2, '0');
+                    disp.appendChild(sb);
+                }, 900);
             }
 
+            // 顯示神諭
             setTimeout(() => {
-                const roll = Math.random();
-                let picked;
-                if(roll < 0.05) picked = oracles[0];
-                else if(roll < 0.15) picked = oracles[1];
-                else picked = oracles[Math.floor(Math.random()*8)+2];
-                
-                document.getElementById('oracle-msg').innerText = picked.t;
-                oUi.classList.add('open');
+                const picked = oracles[Math.floor(Math.random()*oracles.length)];
+                document.getElementById('status').innerText = `【${picked.t}】`;
+                document.getElementById('desc').innerText = picked.d;
+                oracle.classList.add('show');
                 btn.disabled = false;
-            }, 1000);
-        }
-
-        async function snap() {
-            const card = document.getElementById('ritual-card');
-            const btn1 = document.getElementById('btn-sum'); const btn2 = document.getElementById('btn-cap');
-            
-            btn1.style.visibility = 'hidden'; btn2.style.visibility = 'hidden';
-            
-            const canvas = await html2canvas(card, {
-                backgroundColor: '#1a1a1a', // 截圖背景略亮
-                scale: 3,
-                onclone: (doc) => {
-                    const c = doc.getElementById('ritual-card');
-                    c.style.backdropFilter = 'none';
-                    c.style.background = '#1a1a1a';
-                    doc.getElementById('oracle-ui').style.opacity = '1';
-                    doc.getElementById('oracle-ui').style.transform = 'scale(1)';
-                }
-            });
-
-            const link = document.createElement('a');
-            link.download = `Caishen_Oracle.png`;
-            link.href = canvas.toDataURL('image/png', 1.0);
-            link.click();
-            
-            btn1.style.visibility = 'visible'; btn2.style.visibility = 'visible';
+            }, 1200);
         }
     </script>
 </body>
