@@ -37,25 +37,22 @@
         .mode-btn { flex: 1; padding: 10px; border: none; background: transparent; color: #555; font-weight: 800; font-size: 0.75rem; cursor: pointer; border-radius: 10px; transition: 0.3s; }
         .mode-btn.active { background: var(--imperial-red); color: var(--gold-leaf); }
 
-        .ritual-zone { height: 80px; display: flex; justify-content: center; align-items: center; gap: 15px; perspective: 500px; }
+        /* 擲筊區 */
+        .ritual-zone { height: 70px; display: flex; justify-content: center; align-items: center; gap: 15px; perspective: 500px; }
         .block { 
-            width: 35px; height: 55px; background: var(--vivid-red); 
+            width: 30px; height: 50px; background: var(--vivid-red); 
             border-radius: 50% 10% 10% 50% / 50% 10% 10% 50%;
             box-shadow: inset -3px -3px 8px rgba(0,0,0,0.4), 0 8px 15px rgba(0,0,0,0.5);
             display: none;
         }
         .block.show { display: block; }
         .block.flat { transform: rotateY(180deg); background: #eee; border: 1px solid #ccc; }
-        
-        @keyframes toss {
-            0% { transform: translateY(0) rotateX(0) rotateZ(0); }
-            100% { transform: translateY(0) rotateX(1080deg) rotateZ(360deg); }
-        }
+        @keyframes toss { 0% { transform: translateY(0) rotateX(0) rotateZ(0); } 100% { transform: translateY(0) rotateX(1080deg) rotateZ(360deg); } }
         .tossing { animation: toss 0.7s ease-out; }
 
+        /* 數字展示 */
         .result-display { min-height: 110px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px 8px; margin: 15px auto; max-width: 260px; justify-items: center; align-items: center; }
         .result-display.super-mode { grid-template-columns: repeat(4, 1fr); }
-
         .ball {
             width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
             font-size: 1.2rem; font-weight: 800; color: #600; line-height: 1;
@@ -66,31 +63,26 @@
         .ball.special { background: radial-gradient(circle at 30% 30%, #fff 0%, var(--gold-leaf) 100%); color: #430; }
         @keyframes ballPop { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-        /* 解籤互動區 */
-        .oracle-wrapper { margin-top: 15px; display: none; }
+        /* 即時機率與摺疊解釋 */
+        .oracle-wrapper { margin-top: 10px; display: none; }
         .oracle-wrapper.active { display: block; }
         
-        .fold-btn {
-            background: rgba(212, 175, 55, 0.1); color: var(--gold-leaf);
-            border: 1px solid rgba(212, 175, 55, 0.3); padding: 8px 20px;
-            border-radius: 20px; font-size: 0.75rem; cursor: pointer; transition: 0.3s;
-        }
-        .fold-btn:hover { background: rgba(212, 175, 55, 0.2); }
+        .oracle-status-line { font-size: 0.95rem; font-weight: bold; color: #fff; text-shadow: 0 0 10px var(--gold-leaf); cursor: pointer; transition: 0.3s; }
+        .oracle-status-line:active { opacity: 0.7; }
+        .oracle-status-line span { font-size: 0.6rem; color: var(--gold-leaf); margin-left: 8px; border-bottom: 1px solid var(--gold-leaf); opacity: 0.7; }
 
         .oracle-content { 
-            max-height: 0; opacity: 0; overflow: hidden; transition: all 0.6s ease;
-            text-align: left; margin-top: 10px;
+            max-height: 0; opacity: 0; overflow: hidden; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: left; margin-top: 5px;
         }
-        .oracle-content.open { max-height: 250px; opacity: 1; }
-
-        .oracle-tag { font-size: 0.9rem; font-weight: bold; color: #fff; text-shadow: 0 0 10px var(--gold-leaf); display: block; margin-bottom: 5px; text-align: center; }
-        .oracle-desc { font-size: 0.75rem; color: #ccc; line-height: 1.6; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 15px; }
+        .oracle-content.open { max-height: 200px; opacity: 1; padding: 12px 0; }
+        .oracle-desc { font-size: 0.75rem; color: #ccc; line-height: 1.6; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 15px; border: 1px solid rgba(212,175,55,0.15); }
 
         .action-btn {
             background: linear-gradient(180deg, #900 0%, var(--imperial-red) 100%);
             color: var(--gold-leaf); border: 1px solid rgba(212, 175, 55, 0.3);
             width: 100%; padding: 18px; font-size: 1rem; font-weight: 900; border-radius: 18px;
-            cursor: pointer; letter-spacing: 5px; margin-top: 20px; transition: 0.3s;
+            cursor: pointer; letter-spacing: 5px; margin-top: 15px; transition: 0.3s;
         }
         .action-btn:active { transform: scale(0.96); }
     </style>
@@ -99,8 +91,8 @@
 
     <div class="smoke-wrap">
         <div class="smoke-particle" style="left: 10%;"></div>
-        <div class="smoke-particle" style="left: 50%; animation-delay: -4s;"></div>
-        <div class="smoke-particle" style="left: 80%; animation-delay: -8s;"></div>
+        <div class="smoke-particle" style="left: 55%; animation-delay: -4s;"></div>
+        <div class="smoke-particle" style="left: 85%; animation-delay: -8s;"></div>
     </div>
 
     <div class="app-card">
@@ -122,15 +114,17 @@
         <div class="result-display" id="display"></div>
 
         <div class="oracle-wrapper" id="oracle-wrap">
-            <button class="fold-btn" id="toggle-btn" onclick="toggleOracle()">解鎖神諭</button>
+            <div class="oracle-status-line" id="status-line" onclick="toggleOracle()">
+                <span id="status-text"></span>
+                <span>解籤 ▾</span>
+            </div>
             <div class="oracle-content" id="oracle-box">
-                <span class="oracle-tag" id="status"></span>
                 <div class="oracle-desc" id="desc"></div>
             </div>
         </div>
 
         <button class="action-btn" id="main-btn" onclick="performRitual()">召喚財富</button>
-        <div style="margin-top: 25px; font-size: 0.5rem; color: rgba(212, 175, 55, 0.2); letter-spacing: 3px;">DIVINE ALGORITHM SECURED</div>
+        <div style="margin-top: 20px; font-size: 0.5rem; color: rgba(212, 175, 55, 0.15); letter-spacing: 3px;">DIVINE ALGORITHM SECURED</div>
     </div>
 
     <script>
@@ -159,9 +153,9 @@
 
         function toggleOracle() {
             const box = document.getElementById('oracle-box');
-            const btn = document.getElementById('toggle-btn');
             box.classList.toggle('open');
-            btn.innerText = box.classList.contains('open') ? '收起神諭' : '解鎖神諭';
+            const arrow = document.querySelector('.oracle-status-line span:last-child');
+            arrow.innerText = box.classList.contains('open') ? '收起 ▴' : '解籤 ▾';
         }
 
         async function performRitual() {
@@ -175,7 +169,6 @@
             disp.innerHTML = '';
             wrap.classList.remove('active');
             box.classList.remove('open');
-            document.getElementById('toggle-btn').innerText = '解鎖神諭';
             btn.disabled = true;
 
             b1.className = 'block show tossing';
@@ -205,6 +198,7 @@
                 }, 900);
             }
 
+            // 當號碼出齊後，顯示機率，但隱藏解釋
             setTimeout(() => {
                 const roll = Math.random();
                 let prob;
@@ -213,7 +207,7 @@
                 else prob = Math.floor(Math.random() * 40) + 40;
 
                 const picked = oracles[Math.floor(Math.random()*oracles.length)];
-                document.getElementById('status').innerText = `【${picked.t}】機率共振 ${prob}%`;
+                document.getElementById('status-text').innerText = `【${picked.t}】機率共振 ${prob}%`;
                 document.getElementById('desc').innerText = picked.d;
                 wrap.classList.add('active');
                 btn.disabled = false;
