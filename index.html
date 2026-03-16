@@ -20,7 +20,7 @@
 
         .smoke-wrap { position: fixed; width: 100%; height: 100%; z-index: -1; overflow: hidden; }
         .smoke-particle { position: absolute; width: 300px; height: 300px; background: radial-gradient(circle, var(--smoke) 0%, transparent 70%); bottom: -150px; border-radius: 50%; animation: rise 12s infinite linear; opacity: 0; }
-        @keyframes rise { 0% { transform: translateY(0) scale(1); opacity: 0; } 10% { opacity: 1; } 100% { transform: translateY(-120vh) scale(1.8); opacity: 0; } }
+        @keyframes rise { 0% { transform: translateY(0) scale(1); opacity: 0; } 100% { transform: translateY(-120vh) scale(1.8); opacity: 0; } }
 
         .app-card {
             background: rgba(20, 20, 20, 0.7);
@@ -32,10 +32,6 @@
 
         header h1 { font-size: 1.6rem; font-weight: 900; letter-spacing: 5px; margin: 0; background: linear-gradient(180deg, #fff, var(--gold-leaf)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         header p { font-size: 0.6rem; color: var(--gold-leaf); opacity: 0.4; margin-top: 5px; margin-bottom: 20px; letter-spacing: 2px; }
-
-        .mode-selector { display: flex; background: rgba(0, 0, 0, 0.5); border-radius: 15px; padding: 6px; margin-bottom: 20px; border: 1px solid rgba(212, 175, 55, 0.1); gap: 10px; }
-        .mode-btn { flex: 1; padding: 10px; border: none; background: transparent; color: #555; font-weight: 800; font-size: 0.75rem; cursor: pointer; border-radius: 10px; transition: 0.3s; }
-        .mode-btn.active { background: var(--imperial-red); color: var(--gold-leaf); }
 
         /* 擲筊區 */
         .ritual-zone { height: 70px; display: flex; justify-content: center; align-items: center; gap: 15px; perspective: 500px; }
@@ -63,20 +59,20 @@
         .ball.special { background: radial-gradient(circle at 30% 30%, #fff 0%, var(--gold-leaf) 100%); color: #430; }
         @keyframes ballPop { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-        /* 即時機率與摺疊解釋 */
-        .oracle-wrapper { margin-top: 10px; display: none; }
-        .oracle-wrapper.active { display: block; }
+        /* 常駐機率與解籤區 */
+        .oracle-wrapper { margin-top: 15px; border-top: 1px solid rgba(212, 175, 55, 0.1); padding-top: 15px; }
         
-        .oracle-status-line { font-size: 0.95rem; font-weight: bold; color: #fff; text-shadow: 0 0 10px var(--gold-leaf); cursor: pointer; transition: 0.3s; }
-        .oracle-status-line:active { opacity: 0.7; }
-        .oracle-status-line span { font-size: 0.6rem; color: var(--gold-leaf); margin-left: 8px; border-bottom: 1px solid var(--gold-leaf); opacity: 0.7; }
+        .oracle-status-line { font-size: 0.95rem; font-weight: bold; color: rgba(255,255,255,0.4); transition: 0.4s; cursor: pointer; }
+        .oracle-status-line.highlight { color: #fff; text-shadow: 0 0 10px var(--gold-leaf); }
+        .oracle-status-line span { font-size: 0.6rem; color: var(--gold-leaf); margin-left: 8px; border-bottom: 1px solid rgba(212,175,55,0.3); }
 
         .oracle-content { 
             max-height: 0; opacity: 0; overflow: hidden; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            text-align: left; margin-top: 5px;
+            text-align: left;
         }
         .oracle-content.open { max-height: 200px; opacity: 1; padding: 12px 0; }
-        .oracle-desc { font-size: 0.75rem; color: #ccc; line-height: 1.6; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 15px; border: 1px solid rgba(212,175,55,0.15); }
+        .oracle-desc { font-size: 0.75rem; color: #888; line-height: 1.6; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 15px; transition: 0.4s; }
+        .oracle-status-line.highlight + .oracle-content .oracle-desc { color: #ccc; border: 1px solid rgba(212,175,55,0.15); }
 
         .action-btn {
             background: linear-gradient(180deg, #900 0%, var(--imperial-red) 100%);
@@ -85,6 +81,9 @@
             cursor: pointer; letter-spacing: 5px; margin-top: 15px; transition: 0.3s;
         }
         .action-btn:active { transform: scale(0.96); }
+
+        @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
+        .sensing { animation: pulse 1s infinite; }
     </style>
 </head>
 <body>
@@ -100,11 +99,6 @@
             <h1>CAISHEN NODE</h1>
             <p>Predictive Ritual Protocol</p>
         </header>
-        
-        <div class="mode-selector">
-            <button class="mode-btn active" id="tab-lotto" onclick="switchMode('lotto')">大樂透</button>
-            <button class="mode-btn" id="tab-super" onclick="switchMode('super')">威力彩</button>
-        </div>
 
         <div class="ritual-zone">
             <div class="block" id="b1"></div>
@@ -113,13 +107,13 @@
 
         <div class="result-display" id="display"></div>
 
-        <div class="oracle-wrapper" id="oracle-wrap">
+        <div class="oracle-wrapper">
             <div class="oracle-status-line" id="status-line" onclick="toggleOracle()">
-                <span id="status-text"></span>
-                <span>解籤 ▾</span>
+                <b id="status-text">【等待召喚】機率共振 --%</b>
+                <span id="arrow-text">解鎖神諭 ▾</span>
             </div>
             <div class="oracle-content" id="oracle-box">
-                <div class="oracle-desc" id="desc"></div>
+                <div class="oracle-desc" id="desc">請先完成擲筊儀式，財神神諭將在此顯現...</div>
             </div>
         </div>
 
@@ -128,7 +122,6 @@
     </div>
 
     <script>
-        let mode = 'lotto';
         const oracles = [
             { t: "天命所歸", d: "此數組與數位星盤產生強烈共鳴，磁場穩定且具有極強穿透力，實屬上乘之選。" },
             { t: "紫氣東來", d: "檢測到財帛位有明顯波動，此數字排列隱含乾坤定數，建議心誠則靈。" },
@@ -141,43 +134,37 @@
             { t: "潛龍勿用", d: "氣場處於沉澱期。這組號碼象徵「守」，適合小試牛刀。" }
         ];
 
-        function switchMode(m) {
-            mode = m;
-            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(`tab-${m}`).classList.add('active');
-            document.getElementById('display').innerHTML = '';
-            document.getElementById('display').className = 'result-display' + (m === 'super' ? ' super-mode' : '');
-            document.getElementById('oracle-wrap').classList.remove('active');
-            document.getElementById('oracle-box').classList.remove('open');
-        }
-
         function toggleOracle() {
             const box = document.getElementById('oracle-box');
             box.classList.toggle('open');
-            const arrow = document.querySelector('.oracle-status-line span:last-child');
-            arrow.innerText = box.classList.contains('open') ? '收起 ▴' : '解籤 ▾';
+            document.getElementById('arrow-text').innerText = box.classList.contains('open') ? '收起 ▴' : '解鎖神諭 ▾';
         }
 
         async function performRitual() {
             const disp = document.getElementById('display');
             const btn = document.getElementById('main-btn');
-            const wrap = document.getElementById('oracle-wrap');
+            const statusLine = document.getElementById('status-line');
+            const statusText = document.getElementById('status-text');
+            const desc = document.getElementById('desc');
             const box = document.getElementById('oracle-box');
-            const b1 = document.getElementById('b1');
-            const b2 = document.getElementById('b2');
+            const b1 = document.getElementById('b1'); const b2 = document.getElementById('b2');
 
+            // 初始化狀態
             disp.innerHTML = '';
-            wrap.classList.remove('active');
-            box.classList.remove('open');
             btn.disabled = true;
+            statusLine.classList.remove('highlight');
+            statusLine.classList.add('sensing');
+            statusText.innerText = "【感應中...】機率計算中";
+            desc.innerText = "數位祭壇正在連結星盤，請稍候...";
 
-            b1.className = 'block show tossing';
-            b2.className = 'block show tossing flat';
+            // 擲筊
+            b1.className = 'block show tossing'; b2.className = 'block show tossing flat';
             await new Promise(r => setTimeout(r, 700));
             b1.classList.remove('tossing'); b2.classList.remove('tossing');
             await new Promise(r => setTimeout(r, 300));
 
-            let pool = Array.from({length: (mode === 'lotto' ? 49 : 38)}, (_, i) => i + 1);
+            // 生成隨機數 (預設大樂透)
+            let pool = Array.from({length: 49}, (_, i) => i + 1);
             let nums = [];
             for(let i=0; i<6; i++) nums.push(pool.splice(Math.floor(Math.random()*pool.length), 1)[0]);
             nums.sort((a,b)=>a-b);
@@ -190,26 +177,16 @@
                 }, i * 150);
             });
 
-            if (mode === 'super') {
-                setTimeout(() => {
-                    const sb = document.createElement('div');
-                    sb.className = 'ball special'; sb.innerText = (Math.floor(Math.random()*8)+1).toString().padStart(2, '0');
-                    disp.appendChild(sb);
-                }, 900);
-            }
-
-            // 當號碼出齊後，顯示機率，但隱藏解釋
+            // 最終揭曉
             setTimeout(() => {
                 const roll = Math.random();
-                let prob;
-                if(roll < 0.05) prob = Math.floor(Math.random() * 8) + 92;
-                else if(roll < 0.15) prob = Math.floor(Math.random() * 11) + 80;
-                else prob = Math.floor(Math.random() * 40) + 40;
-
+                let prob = roll < 0.05 ? Math.floor(Math.random() * 8) + 92 : Math.floor(Math.random() * 40) + 40;
                 const picked = oracles[Math.floor(Math.random()*oracles.length)];
-                document.getElementById('status-text').innerText = `【${picked.t}】機率共振 ${prob}%`;
-                document.getElementById('desc').innerText = picked.d;
-                wrap.classList.add('active');
+                
+                statusLine.classList.remove('sensing');
+                statusLine.classList.add('highlight');
+                statusText.innerText = `【${picked.t}】機率共振 ${prob}%`;
+                desc.innerText = picked.d;
                 btn.disabled = false;
             }, 1200);
         }
