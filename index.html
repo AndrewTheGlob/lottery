@@ -18,18 +18,15 @@
             margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow-y: auto;
         }
 
-        /* 煙霧背景動畫 */
         .smoke-wrap { position: fixed; width: 100%; height: 100%; z-index: -1; overflow: hidden; }
         .smoke-particle { position: absolute; width: 300px; height: 300px; background: radial-gradient(circle, var(--smoke) 0%, transparent 70%); bottom: -150px; border-radius: 50%; animation: rise 12s infinite linear; opacity: 0; }
         @keyframes rise { 0% { transform: translateY(0) scale(1); opacity: 0; } 10% { opacity: 1; } 100% { transform: translateY(-120vh) scale(1.8); opacity: 0; } }
 
         .app-card {
             background: rgba(20, 20, 20, 0.7);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
             border: 1px solid rgba(212, 175, 55, 0.25);
-            border-radius: 35px;
-            width: 90%; max-width: 380px; padding: 35px 15px; text-align: center;
+            border-radius: 35px; width: 90%; max-width: 380px; padding: 35px 15px; text-align: center;
             box-shadow: 0 40px 80px rgba(0,0,0,0.8); position: relative; box-sizing: border-box; margin: 20px 0;
         }
 
@@ -40,7 +37,6 @@
         .mode-btn { flex: 1; padding: 10px; border: none; background: transparent; color: #555; font-weight: 800; font-size: 0.75rem; cursor: pointer; border-radius: 10px; transition: 0.3s; }
         .mode-btn.active { background: var(--imperial-red); color: var(--gold-leaf); }
 
-        /* 擲筊動畫區 */
         .ritual-zone { height: 80px; display: flex; justify-content: center; align-items: center; gap: 15px; perspective: 500px; }
         .block { 
             width: 35px; height: 55px; background: var(--vivid-red); 
@@ -53,19 +49,16 @@
         
         @keyframes toss {
             0% { transform: translateY(0) rotateX(0) rotateZ(0); }
-            25% { transform: translateY(-60px) rotateX(360deg) rotateZ(90deg); }
-            50% { transform: translateY(0) rotateX(720deg) rotateZ(180deg); }
-            75% { transform: translateY(-20px) rotateX(900deg) rotateZ(270deg); }
             100% { transform: translateY(0) rotateX(1080deg) rotateZ(360deg); }
         }
         .tossing { animation: toss 0.7s ease-out; }
 
-        .result-display { min-height: 110px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px 8px; margin: 15px auto; max-width: 260px; justify-items: center; }
+        .result-display { min-height: 110px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px 8px; margin: 15px auto; max-width: 260px; justify-items: center; align-items: center; }
         .result-display.super-mode { grid-template-columns: repeat(4, 1fr); }
 
         .ball {
             width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
-            font-size: 1.2rem; font-weight: 800; color: #600;
+            font-size: 1.2rem; font-weight: 800; color: #600; line-height: 1;
             background: radial-gradient(circle at 30% 30%, #ffffff 0%, #d1d1d1 100%);
             box-shadow: inset -3px -3px 8px rgba(0,0,0,0.2), 0 5px 10px rgba(0,0,0,0.5);
             animation: ballPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
@@ -73,11 +66,25 @@
         .ball.special { background: radial-gradient(circle at 30% 30%, #fff 0%, var(--gold-leaf) 100%); color: #430; }
         @keyframes ballPop { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-        /* 解籤區 */
-        .oracle-section { margin-top: 20px; opacity: 0; transition: 0.8s; max-height: 0; overflow: hidden; }
-        .oracle-section.show { opacity: 1; max-height: 300px; }
-        .oracle-tag { font-size: 0.9rem; font-weight: bold; color: #fff; text-shadow: 0 0 10px var(--gold-leaf); }
-        .oracle-desc { font-size: 0.75rem; color: #ccc; line-height: 1.6; margin: 10px 0; text-align: left; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 15px; }
+        /* 解籤互動區 */
+        .oracle-wrapper { margin-top: 15px; display: none; }
+        .oracle-wrapper.active { display: block; }
+        
+        .fold-btn {
+            background: rgba(212, 175, 55, 0.1); color: var(--gold-leaf);
+            border: 1px solid rgba(212, 175, 55, 0.3); padding: 8px 20px;
+            border-radius: 20px; font-size: 0.75rem; cursor: pointer; transition: 0.3s;
+        }
+        .fold-btn:hover { background: rgba(212, 175, 55, 0.2); }
+
+        .oracle-content { 
+            max-height: 0; opacity: 0; overflow: hidden; transition: all 0.6s ease;
+            text-align: left; margin-top: 10px;
+        }
+        .oracle-content.open { max-height: 250px; opacity: 1; }
+
+        .oracle-tag { font-size: 0.9rem; font-weight: bold; color: #fff; text-shadow: 0 0 10px var(--gold-leaf); display: block; margin-bottom: 5px; text-align: center; }
+        .oracle-desc { font-size: 0.75rem; color: #ccc; line-height: 1.6; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 15px; }
 
         .action-btn {
             background: linear-gradient(180deg, #900 0%, var(--imperial-red) 100%);
@@ -86,9 +93,6 @@
             cursor: pointer; letter-spacing: 5px; margin-top: 20px; transition: 0.3s;
         }
         .action-btn:active { transform: scale(0.96); }
-        .action-btn:disabled { opacity: 0.5; }
-
-        .footer-note { margin-top: 25px; font-size: 0.5rem; color: rgba(212, 175, 55, 0.2); letter-spacing: 3px; }
     </style>
 </head>
 <body>
@@ -117,14 +121,16 @@
 
         <div class="result-display" id="display"></div>
 
-        <div class="oracle-section" id="oracle">
-            <div class="oracle-tag" id="status">【聖筊】</div>
-            <div class="oracle-desc" id="desc"></div>
+        <div class="oracle-wrapper" id="oracle-wrap">
+            <button class="fold-btn" id="toggle-btn" onclick="toggleOracle()">解鎖神諭</button>
+            <div class="oracle-content" id="oracle-box">
+                <span class="oracle-tag" id="status"></span>
+                <div class="oracle-desc" id="desc"></div>
+            </div>
         </div>
 
         <button class="action-btn" id="main-btn" onclick="performRitual()">召喚財富</button>
-        
-        <div class="footer-note">DIVINE ALGORITHM SECURED</div>
+        <div style="margin-top: 25px; font-size: 0.5rem; color: rgba(212, 175, 55, 0.2); letter-spacing: 3px;">DIVINE ALGORITHM SECURED</div>
     </div>
 
     <script>
@@ -147,29 +153,37 @@
             document.getElementById(`tab-${m}`).classList.add('active');
             document.getElementById('display').innerHTML = '';
             document.getElementById('display').className = 'result-display' + (m === 'super' ? ' super-mode' : '');
-            document.getElementById('oracle').classList.remove('show');
+            document.getElementById('oracle-wrap').classList.remove('active');
+            document.getElementById('oracle-box').classList.remove('open');
+        }
+
+        function toggleOracle() {
+            const box = document.getElementById('oracle-box');
+            const btn = document.getElementById('toggle-btn');
+            box.classList.toggle('open');
+            btn.innerText = box.classList.contains('open') ? '收起神諭' : '解鎖神諭';
         }
 
         async function performRitual() {
             const disp = document.getElementById('display');
             const btn = document.getElementById('main-btn');
-            const oracle = document.getElementById('oracle');
+            const wrap = document.getElementById('oracle-wrap');
+            const box = document.getElementById('oracle-box');
             const b1 = document.getElementById('b1');
             const b2 = document.getElementById('b2');
 
             disp.innerHTML = '';
-            oracle.classList.remove('show');
+            wrap.classList.remove('active');
+            box.classList.remove('open');
+            document.getElementById('toggle-btn').innerText = '解鎖神諭';
             btn.disabled = true;
 
-            // 擲筊動畫
             b1.className = 'block show tossing';
             b2.className = 'block show tossing flat';
             await new Promise(r => setTimeout(r, 700));
-            b1.classList.remove('tossing');
-            b2.classList.remove('tossing');
-            await new Promise(r => setTimeout(r, 400));
+            b1.classList.remove('tossing'); b2.classList.remove('tossing');
+            await new Promise(r => setTimeout(r, 300));
 
-            // 生成號碼
             let pool = Array.from({length: (mode === 'lotto' ? 49 : 38)}, (_, i) => i + 1);
             let nums = [];
             for(let i=0; i<6; i++) nums.push(pool.splice(Math.floor(Math.random()*pool.length), 1)[0]);
@@ -178,8 +192,7 @@
             nums.forEach((n, i) => {
                 setTimeout(() => {
                     const b = document.createElement('div');
-                    b.className = 'ball';
-                    b.innerText = n.toString().padStart(2, '0');
+                    b.className = 'ball'; b.innerText = n.toString().padStart(2, '0');
                     disp.appendChild(b);
                 }, i * 150);
             });
@@ -187,18 +200,22 @@
             if (mode === 'super') {
                 setTimeout(() => {
                     const sb = document.createElement('div');
-                    sb.className = 'ball special';
-                    sb.innerText = (Math.floor(Math.random()*8)+1).toString().padStart(2, '0');
+                    sb.className = 'ball special'; sb.innerText = (Math.floor(Math.random()*8)+1).toString().padStart(2, '0');
                     disp.appendChild(sb);
                 }, 900);
             }
 
-            // 顯示神諭
             setTimeout(() => {
+                const roll = Math.random();
+                let prob;
+                if(roll < 0.05) prob = Math.floor(Math.random() * 8) + 92;
+                else if(roll < 0.15) prob = Math.floor(Math.random() * 11) + 80;
+                else prob = Math.floor(Math.random() * 40) + 40;
+
                 const picked = oracles[Math.floor(Math.random()*oracles.length)];
-                document.getElementById('status').innerText = `【${picked.t}】`;
+                document.getElementById('status').innerText = `【${picked.t}】機率共振 ${prob}%`;
                 document.getElementById('desc').innerText = picked.d;
-                oracle.classList.add('show');
+                wrap.classList.add('active');
                 btn.disabled = false;
             }, 1200);
         }
